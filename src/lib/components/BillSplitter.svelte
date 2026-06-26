@@ -5,6 +5,8 @@
 	import PeopleSection from './bill-splitter/PeopleSection.svelte';
 	import ReceiptTray from './bill-splitter/ReceiptTray.svelte';
 	import SettingsModal from './bill-splitter/SettingsModal.svelte';
+	import TipServiceSection from './bill-splitter/TipServiceSection.svelte';
+	import WhoPaidSection from './bill-splitter/WhoPaidSection.svelte';
 	import { ACCENTS, CURRENCIES, CURRENCY_SYMBOL, PALETTE, STR } from './bill-splitter/constants';
 	import type { BillItem, Lang, Person, PersonShare, Transfer } from './bill-splitter/types';
 
@@ -322,90 +324,16 @@
 			onToggleAssign={({ itemId, personId }) => toggleAssign(itemId, personId)}
 			onSplitAll={({ itemId }) => splitAll(itemId)}
 		/>
-		<section class="bg-white border-thick border-primary rounded-3xl shadow-lg p-4">
-			<div class="head-row">
-				<div class="text-muted text-xs font-bricolage font-extrabold tracking-xs">
-					{t().tipService}
-				</div>
-				<div class="text-success text-lg-0.5 font-mono font-bold">
-					{tip === 0 ? t().none : `+${m(tipAmount)}`}
-				</div>
-			</div>
-			<div class="grid grid-cols-4 gap-2 md:grid-cols-2">
-				{#each [0, 5, 10, 15] as option}
-					<button
-						type="button"
-						class:border-primary={tip === option}
-						class:bg-primary={tip === option}
-						class:text-white={tip === option}
-						class="h-12 rounded-md font-mono font-bold cursor-pointer border-thick border-border-light bg-white text-muted-light"
-						onclick={() => (tip = option)}>{option}%</button
-					>
-				{/each}
-			</div>
-			<div
-				class="h-0.5 bg-repeat-x"
-				style="background-image: repeating-linear-gradient(90deg, #e0d4bd 0 7px, transparent 7px 13px)"
-			></div>
-			<div class="flex justify-between items-center gap-lg md:flex-col md:items-stretch">
-				<div>
-					<div class="text-xl font-bold text-primary-light">{t().sharedExtra}</div>
-					<div class="text-xs text-muted font-bold">{t().sharedExtraSub}</div>
-				</div>
-				<div class="relative w-35 shrink-0 md:w-full">
-					<span
-						class="absolute left-3 top-1/2 -translate-y-1/2 text-2xl font-bold text-muted-lighter"
-						>{cur()}</span
-					>
-					<input
-						type="text"
-						inputmode="decimal"
-						value={fixed ? fixed.toString() : ''}
-						oninput={(event) => {
-							const value = Number.parseFloat(
-								(event.currentTarget as HTMLInputElement).value.replace(',', '.')
-							);
-							fixed = Number.isNaN(value) ? 0 : value;
-						}}
-						placeholder="0.00"
-						class="w-full h-12 border-thick border-primary rounded-md p-0 pl-14 font-mono font-bold text-2xl bg-surface-light"
-					/>
-				</div>
-			</div>
-		</section>
-		<section class="bg-white border-thick border-primary rounded-3xl shadow-lg p-4">
-			<div class="flex items-center gap-2 mb-1">
-				<span
-					class="text-xs font-bricolage font-extrabold tracking-xs text-white bg-primary px-2 py-0.5 rounded-xs"
-					>{t().step3}</span
-				>
-				<h2 class="m-0 text-xl font-bold text-primary-light">{t().whoPaid}</h2>
-			</div>
-			<p class="text-xs text-muted font-bold m-0 mb-3">{t().whoPaidSub}</p>
-			{#if people.length}
-				<div class="flex flex-wrap gap-2">
-					{#each people as person (person.id)}
-						<button
-							type="button"
-							class:border-primary={payers.includes(person.id)}
-							class:opacity-100={payers.includes(person.id)}
-							class:opacity-45={!payers.includes(person.id)}
-							class="px-4 py-2 rounded-full font-bricolage font-bold cursor-pointer border-thick border-border-light text-white text-lg"
-							style={`background-color: ${person.color}`}
-							onclick={() => togglePayer(person.id)}
-						>
-							{person.name}
-						</button>
-					{/each}
-				</div>
-			{:else}
-				<div
-					class="p-4 rounded-lg bg-empty-bg border-2 border-dashed border-border-lighter text-xs text-muted font-bold"
-				>
-					{t().payerEmptyPeople}
-				</div>
-			{/if}
-		</section>
+		<TipServiceSection
+			t={t()}
+			{tip}
+			tipAmountLabel={m(tipAmount)}
+			currencySymbol={cur()}
+			fixedValue={fixed ? fixed.toString() : ''}
+			onTipChange={(value: number) => (tip = value)}
+			onFixedChange={(value: number) => (fixed = value)}
+		/>
+		<WhoPaidSection t={t()} {people} {payers} onTogglePayer={({ id }) => togglePayer(id)} />
 		<div class="sticky bottom-3 z-50">
 			<div
 				class="flex items-center gap-3 bg-primary border-thick border-primary rounded-2xl p-3 md:flex-col md:items-stretch"
