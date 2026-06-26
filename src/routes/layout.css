@@ -73,6 +73,12 @@
 		font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', system-ui, sans-serif;
 	}
 
+	input:focus,
+	input:focus-visible {
+		outline: none;
+		box-shadow: 0 0 0 2.5px var(--color-accent);
+	}
+
 	::-webkit-scrollbar {
 		width: 8px;
 	}
