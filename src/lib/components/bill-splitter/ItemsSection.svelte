@@ -45,6 +45,12 @@
 	function money(value: number): string {
 		return `${currencySymbol}${value.toFixed(2)}`;
 	}
+
+	function isEveryoneAssigned(item: BillItem): boolean {
+		if (!people.length) return false;
+		const allIds = people.map((person) => person.id);
+		return allIds.every((id) => item.assigned.includes(id));
+	}
 </script>
 
 <section class="bg-white border-thick border-primary rounded-3xl shadow-lg p-4">
@@ -104,18 +110,29 @@
 					<div class="flex flex-wrap gap-2 mt-3">
 						<button
 							type="button"
-							class="px-4 py-2 rounded-full font-bricolage font-bold cursor-pointer border-2 border-border-light bg-white text-muted-light text-lg"
+							class="px-4 border-2 py-2 rounded-full transition-all font-bricolage font-bold cursor-pointer text-lg {isEveryoneAssigned(
+								item
+							)
+								? ' bg-black text-white shadow-accent shadow-sm border-black'
+								: '  text-muted-light border-muted-light'}"
 							onclick={() => onSplitAll({ itemId: item.id })}>{t.everyone}</button
 						>
 						{#each people as person (person.id)}
+							{@const assigned = item.assigned.includes(person.id)}
 							<button
 								type="button"
-								class:border-primary={item.assigned.includes(person.id)}
-								class:bg-primary={item.assigned.includes(person.id)}
-								class:text-white={item.assigned.includes(person.id)}
-								class="px-4 py-2 rounded-full font-bricolage font-bold cursor-pointer border-2 border-border-light bg-white text-muted-light text-lg"
+								class="px-4 pl-2 py-2 flex items-center border-2 transition-all gap-2 rounded-full font-bricolage font-bold cursor-pointer text-lg {assigned
+									? `shadow-sm text-white  border-black`
+									: ' text-muted-light  border-muted-light'}"
+								style={assigned ? `background-color: ${person.color}` : ''}
 								onclick={() => onToggleAssign({ itemId: item.id, personId: person.id })}
 							>
+								<span
+									class="{assigned
+										? ''
+										: ' opacity-70'} w-5 h-5 grid place-items-center rounded-full text-xs font-extrabold text-white border border-primary"
+									style={`background:${person.color}`}>{person.name[0]?.toUpperCase() ?? '?'}</span
+								>
 								{person.name}
 							</button>
 						{/each}

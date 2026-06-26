@@ -388,9 +388,10 @@
 						<button
 							type="button"
 							class:border-primary={payers.includes(person.id)}
-							class:bg-primary={payers.includes(person.id)}
-							class:text-white={payers.includes(person.id)}
-							class="px-4 py-2 rounded-full font-bricolage font-bold cursor-pointer border-thick border-border-light bg-white text-muted-light text-lg"
+							class:opacity-100={payers.includes(person.id)}
+							class:opacity-45={!payers.includes(person.id)}
+							class="px-4 py-2 rounded-full font-bricolage font-bold cursor-pointer border-thick border-border-light text-white text-lg"
+							style={`background-color: ${person.color}`}
 							onclick={() => togglePayer(person.id)}
 						>
 							{person.name}
