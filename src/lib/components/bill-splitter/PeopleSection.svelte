@@ -31,7 +31,7 @@
 		>
 		<h2 class="m-0 text-xl font-bold text-primary-light">{t.who}</h2>
 	</div>
-	<div class="flex gap-md">
+	<div class="flex gap-4">
 		<input
 			bind:value={name}
 			onkeydown={(e) => e.key === 'Enter' && submit()}
@@ -46,7 +46,7 @@
 	</div>
 
 	{#if people.length}
-		<div class="flex flex-wrap gap-md mt-3">
+		<div class="flex flex-wrap gap-2 mt-3">
 			{#each people as person (person.id)}
 				<div
 					class="inline-flex items-center gap-2 py-1 pr-2 pl-1 rounded-full bg-white border-2 border-primary shadow-sm"

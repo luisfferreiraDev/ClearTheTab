@@ -304,7 +304,7 @@
 ></div>
 
 <main class="relative z-1 min-h-screen flex justify-center px-4 py-7 md:py-5 md:px-3">
-	<div class="w-full max-w-md flex flex-col gap-sm">
+	<div class="w-full max-w-md flex flex-col gap-6">
 		<HeaderBar t={t()} accent={currentAccent} onSettings={() => (settingsOpen = true)} />
 		<PeopleSection
 			t={t()}

@@ -56,7 +56,7 @@
 		<h2 class="m-0 text-xl font-bold text-primary-light">{t.what}</h2>
 	</div>
 
-	<div class="grid grid-cols-[1.5fr_1fr_auto] gap-md md:grid-cols-1">
+	<div class="grid md:grid-cols-[1.5fr_1fr_auto] gap-4 grid-cols-1">
 		<input
 			bind:value={itemName}
 			onkeydown={(e) => e.key === 'Enter' && submit()}
@@ -77,7 +77,7 @@
 		</div>
 		<button
 			type="button"
-			class="w-12 h-12 border-thick border-primary rounded-sm text-3xl font-bold cursor-pointer md:w-full"
+			class="md:w-12 h-12 border-thick border-primary rounded-sm text-3xl font-bold cursor-pointer w-full shrink-0"
 			style={`background-color: var(--accent, #ff6a3d)`}
 			onclick={submit}>+</button
 		>
@@ -87,7 +87,7 @@
 		<div class="flex flex-col gap-3 mt-4">
 			{#each items as item (item.id)}
 				<div class="border-thick border-primary bg-surface-light rounded-2xl p-4 shadow-sm">
-					<div class="flex justify-between gap-3">
+					<div class="flex justify-between items-start gap-3">
 						<div>
 							<div class="font-bricolage font-bold text-2xl-0.5">{item.name}</div>
 							<div class="text-md font-bold text-muted-light mt-0.5">{eachLabel(item)}</div>
