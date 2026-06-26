@@ -335,24 +335,18 @@
 		/>
 		<WhoPaidSection t={t()} {people} {payers} onTogglePayer={({ id }) => togglePayer(id)} />
 		<div class="sticky bottom-3 z-50">
-			<div
-				class="flex items-center gap-3 bg-primary border-thick border-primary rounded-2xl p-3 md:flex-col md:items-stretch"
-			>
+			<div class="flex items-center gap-3 bg-primary border-thick border-primary rounded-2xl p-3">
 				<div class="flex-1 flex flex-col gap-0.5">
 					<div class="text-xs font-bold tracking-md text-muted-light">{t().billTotal}</div>
 					<strong class="font-mono text-5xl font-bold text-white">{m(grand)}</strong>
 				</div>
 				<button
 					type="button"
-					class:border-primary={!tallyEnabled}
-					class:bg-transparent={!tallyEnabled}
-					class:text-muted={!tallyEnabled}
-					class:cursor-default={!tallyEnabled}
-					class="h-12 px-5 border-thick border-surface-light rounded-lg text-primary font-bricolage font-extrabold text-2xl-0.5 cursor-pointer md:w-full"
-					style={`background-color: ${tallyEnabled ? 'var(--accent, #ff6a3d)' : 'transparent'}`}
+					disabled={!tallyEnabled}
+					class="h-12 disabled:bg-border-light disabled:text-muted px-5 border-thick border-surface-light rounded-lg text-primary bg-accent font-bricolage font-extrabold text-2xl-0.5 cursor-pointer"
 					onclick={() => tallyEnabled && (trayOpen = true)}
 				>
-					{tallyEnabled ? t().tally : t().addPeopleItems}
+					{t().tally}
 				</button>
 			</div>
 		</div>

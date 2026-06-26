@@ -26,15 +26,22 @@
 	{#if people.length}
 		<div class="flex flex-wrap gap-2">
 			{#each people as person (person.id)}
+				{@const assigned = payers.includes(person.id)}
+
 				<button
 					type="button"
-					class:border-primary={payers.includes(person.id)}
-					class:opacity-100={payers.includes(person.id)}
-					class:opacity-45={!payers.includes(person.id)}
-					class="px-4 py-2 rounded-full font-bricolage font-bold cursor-pointer border-thick border-border-light text-white text-lg"
-					style={`background-color: ${person.color}`}
+					class="px-4 pl-2 py-2 flex items-center border-2 transition-all gap-2 rounded-full font-bricolage font-bold cursor-pointer text-lg {assigned
+						? `shadow-sm text-white  border-black`
+						: ' text-muted-light  border-muted-light'}"
+					style={assigned ? `background-color: ${person.color}` : ''}
 					onclick={() => onTogglePayer({ id: person.id })}
 				>
+					<span
+						class="{assigned
+							? ''
+							: ' opacity-70'} w-5 h-5 grid place-items-center rounded-full text-xs font-extrabold text-white border border-primary"
+						style={`background:${person.color}`}>{person.name[0]?.toUpperCase() ?? '?'}</span
+					>
 					{person.name}
 				</button>
 			{/each}
