@@ -47,52 +47,73 @@
 	}
 </script>
 
-<section class="card">
-	<div class="head">
-		<span class="step">{t.step2}</span>
-		<h2>{t.what}</h2>
+<section class="bg-white border-thick border-primary rounded-3xl shadow-lg p-4">
+	<div class="flex items-center gap-2 mb-3">
+		<span
+			class="text-xs font-bricolage font-extrabold tracking-xs text-white bg-primary px-2 py-0.5 rounded-xs"
+			>{t.step2}</span
+		>
+		<h2 class="m-0 text-xl font-bold text-primary-light">{t.what}</h2>
 	</div>
 
-	<div class="add-row">
+	<div class="grid grid-cols-[1.5fr_1fr_auto] gap-md md:grid-cols-1">
 		<input
 			bind:value={itemName}
 			onkeydown={(e) => e.key === 'Enter' && submit()}
 			placeholder={t.itemPh}
+			class="h-12 border-thick border-primary rounded-sm p-0 px-4 text-2xl-0.5 font-bold bg-surface-light"
 		/>
-		<div class="price-wrap">
-			<span>{currencySymbol}</span>
+		<div class="relative">
+			<span class="absolute left-3 top-1/2 -translate-y-1/2 text-2xl font-bold text-muted-lighter"
+				>{currencySymbol}</span
+			>
 			<input
 				bind:value={itemPrice}
 				inputmode="decimal"
 				onkeydown={(e) => e.key === 'Enter' && submit()}
 				placeholder="0.00"
+				class="w-full h-12 border-thick border-primary rounded-sm p-0 pl-12 text-2xl-0.5 font-bold bg-surface-light"
 			/>
 		</div>
-		<button type="button" class="plus" onclick={submit}>+</button>
+		<button
+			type="button"
+			class="w-12 h-12 border-thick border-primary rounded-sm text-3xl font-bold cursor-pointer md:w-full"
+			style={`background-color: var(--accent, #ff6a3d)`}
+			onclick={submit}>+</button
+		>
 	</div>
 
 	{#if items.length}
-		<div class="items">
+		<div class="flex flex-col gap-3 mt-4">
 			{#each items as item (item.id)}
-				<div class="item-card">
-					<div class="item-head">
+				<div class="border-thick border-primary bg-surface-light rounded-2xl p-4 shadow-sm">
+					<div class="flex justify-between gap-3">
 						<div>
-							<div class="item-title">{item.name}</div>
-							<div class="item-sub">{eachLabel(item)}</div>
+							<div class="font-bricolage font-bold text-2xl-0.5">{item.name}</div>
+							<div class="text-md font-bold text-muted-light mt-0.5">{eachLabel(item)}</div>
 						</div>
-						<div class="item-right">
+						<div class="flex items-center gap-2 font-mono font-bold text-2xl">
 							<span>{money(item.price)}</span>
-							<button type="button" onclick={() => onRemove({ id: item.id })}>x</button>
+							<button
+								type="button"
+								class="w-6 h-6 border-2 border-primary rounded-sm bg-white cursor-pointer"
+								onclick={() => onRemove({ id: item.id })}>x</button
+							>
 						</div>
 					</div>
-					<div class="assignments">
-						<button type="button" onclick={() => onSplitAll({ itemId: item.id })}
-							>{t.everyone}</button
+					<div class="flex flex-wrap gap-2 mt-3">
+						<button
+							type="button"
+							class="px-4 py-2 rounded-full font-bricolage font-bold cursor-pointer border-2 border-border-light bg-white text-muted-light text-lg"
+							onclick={() => onSplitAll({ itemId: item.id })}>{t.everyone}</button
 						>
 						{#each people as person (person.id)}
 							<button
 								type="button"
-								class:item-active={item.assigned.includes(person.id)}
+								class:border-primary={item.assigned.includes(person.id)}
+								class:bg-primary={item.assigned.includes(person.id)}
+								class:text-white={item.assigned.includes(person.id)}
+								class="px-4 py-2 rounded-full font-bricolage font-bold cursor-pointer border-2 border-border-light bg-white text-muted-light text-lg"
 								onclick={() => onToggleAssign({ itemId: item.id, personId: person.id })}
 							>
 								{person.name}
@@ -103,164 +124,10 @@
 			{/each}
 		</div>
 	{:else}
-		<div class="empty">{people.length ? t.noItems : t.addFriendsFirst}</div>
+		<div
+			class="mt-3 p-5 rounded-xl bg-empty-bg border-2 border-dashed border-border-lighter text-center text-xl font-bold text-primary-light"
+		>
+			{people.length ? t.noItems : t.addFriendsFirst}
+		</div>
 	{/if}
 </section>
-
-<style>
-	.card {
-		background: #fff;
-		border: 2.5px solid #211e1a;
-		border-radius: 22px;
-		box-shadow: 4px 4px 0 #211e1a;
-		padding: 17px;
-	}
-	.head {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		margin-bottom: 12px;
-	}
-	.step {
-		font:
-			800 12px 'Bricolage Grotesque',
-			system-ui;
-		letter-spacing: 0.02em;
-		color: #fff;
-		background: #211e1a;
-		padding: 3px 9px;
-		border-radius: 7px;
-	}
-	h2 {
-		margin: 0;
-		font-size: 14px;
-		font-weight: 700;
-		color: #3a332a;
-	}
-	.add-row {
-		display: grid;
-		grid-template-columns: 1.5fr 1fr auto;
-		gap: 9px;
-	}
-	input {
-		height: 48px;
-		border: 2.5px solid #211e1a;
-		border-radius: 12px;
-		padding: 0 14px;
-		font-size: 15.5px;
-		font-weight: 600;
-		background: #fffdf8;
-	}
-	.price-wrap {
-		position: relative;
-	}
-	.price-wrap span {
-		position: absolute;
-		left: 13px;
-		top: 50%;
-		transform: translateY(-50%);
-		font-size: 15px;
-		font-weight: 700;
-		color: #b3a892;
-	}
-	.price-wrap input {
-		width: 100%;
-		padding-left: 44px;
-	}
-	.plus {
-		width: 48px;
-		height: 48px;
-		border: 2.5px solid #211e1a;
-		border-radius: 12px;
-		background: var(--accent, #ff6a3d);
-		font-size: 26px;
-		font-weight: 700;
-		cursor: pointer;
-	}
-	.items {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-		margin-top: 15px;
-	}
-	.item-card {
-		border: 2.5px solid #211e1a;
-		background: #fffdf8;
-		border-radius: 17px;
-		padding: 14px;
-		box-shadow: 2px 2px 0 #211e1a;
-	}
-	.item-head {
-		display: flex;
-		justify-content: space-between;
-		gap: 12px;
-	}
-	.item-title {
-		font:
-			700 16.5px 'Bricolage Grotesque',
-			system-ui;
-	}
-	.item-sub {
-		font-size: 12.5px;
-		font-weight: 700;
-		color: #9a917f;
-		margin-top: 3px;
-	}
-	.item-right {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		font:
-			700 16px 'Space Mono',
-			monospace;
-	}
-	.item-right button {
-		width: 26px;
-		height: 26px;
-		border: 2px solid #211e1a;
-		border-radius: 8px;
-		background: #fff;
-		cursor: pointer;
-	}
-	.assignments {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-		margin-top: 13px;
-	}
-	.assignments button {
-		padding: 7px 14px;
-		border-radius: 999px;
-		font:
-			700 13px 'Bricolage Grotesque',
-			system-ui;
-		cursor: pointer;
-		border: 2px solid #cfc4ae;
-		background: #fff;
-		color: #9a917f;
-	}
-	.assignments .item-active {
-		border-color: #211e1a;
-		background: #211e1a;
-		color: #fff;
-	}
-	.empty {
-		margin-top: 14px;
-		padding: 20px 15px;
-		border-radius: 15px;
-		background: #fbf4e7;
-		border: 2px dashed #e0d4bd;
-		text-align: center;
-		font-size: 14px;
-		font-weight: 700;
-		color: #56503f;
-	}
-	@media (max-width: 640px) {
-		.add-row {
-			grid-template-columns: 1fr;
-		}
-		.plus {
-			width: 100%;
-		}
-	}
-</style>

@@ -1,24 +1,39 @@
 <script lang="ts">
 	import type { I18n } from './types';
-	import { createEventDispatcher } from 'svelte';
 
-	let { t, accent = '#FF6A3D' }: { t: I18n; accent?: string } = $props();
-
-	const dispatch = createEventDispatcher<{ settings: void }>();
+	let {
+		t,
+		accent = '#FF6A3D',
+		onSettings = () => {}
+	}: { t: I18n; accent?: string; onSettings?: () => void } = $props();
 </script>
 
-<div class="header-row">
-	<div class="logo" style={`background:${accent}`}>
-		<span>T</span>
+<div class="flex items-center gap-lg py-0.5 px-xs">
+	<div
+		class="w-12 h-12 rounded-lg border-thick border-primary shadow-md grid place-items-center shrink-0"
+		style={`background:${accent};transform:rotate(-4deg)`}
+	>
+		<span class="font-bricolage font-extrabold text-6xl text-primary" style="transform:rotate(4deg)"
+			>T</span
+		>
 	</div>
-	<div class="title-wrap">
-		<h1>Clear The Tab</h1>
-		<p>{t.subtitle}</p>
+	<div class="min-w-0 flex-1">
+		<h1
+			class="m-0 font-bricolage font-extrabold text-5xl text-primary-light leading-tight"
+			style="letter-spacing:-0.02em"
+		>
+			Clear The Tab
+		</h1>
+		<p
+			class="mt-0.5 m-0 text-md text-muted font-bold whitespace-nowrap overflow-hidden text-ellipsis"
+		>
+			{t.subtitle}
+		</p>
 	</div>
 	<button
-		class="settings"
+		class="w-11 h-11 shrink-0 border-thick border-primary rounded-md bg-white shadow-md grid place-items-center text-primary cursor-pointer"
 		type="button"
-		on:click={() => dispatch('settings')}
+		onclick={onSettings}
 		aria-label="Settings"
 	>
 		<svg
@@ -36,65 +51,3 @@
 		>
 	</button>
 </div>
-
-<style>
-	.header-row {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 2px 4px;
-	}
-	.logo {
-		width: 46px;
-		height: 46px;
-		border-radius: 14px;
-		border: 2.5px solid #211e1a;
-		box-shadow: 3px 3px 0 #211e1a;
-		display: grid;
-		place-items: center;
-		transform: rotate(-4deg);
-		flex-shrink: 0;
-	}
-	.logo span {
-		font:
-			800 24px 'Bricolage Grotesque',
-			system-ui;
-		color: #211e1a;
-		transform: rotate(4deg);
-	}
-	.title-wrap {
-		min-width: 0;
-		flex: 1;
-	}
-	h1 {
-		margin: 0;
-		font:
-			800 22px 'Bricolage Grotesque',
-			system-ui;
-		letter-spacing: -0.02em;
-		color: #211e1a;
-		line-height: 1.05;
-	}
-	p {
-		margin: 1px 0 0;
-		font-size: 12.5px;
-		color: #8a7e6a;
-		font-weight: 600;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-	.settings {
-		width: 44px;
-		height: 44px;
-		flex-shrink: 0;
-		border: 2.5px solid #211e1a;
-		border-radius: 13px;
-		background: #fff;
-		box-shadow: 3px 3px 0 #211e1a;
-		cursor: pointer;
-		display: grid;
-		place-items: center;
-		color: #211e1a;
-	}
-</style>

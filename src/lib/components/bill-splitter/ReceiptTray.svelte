@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import type { I18n, PersonShare, Transfer } from './types';
 
 	let {
@@ -18,7 +17,10 @@
 		showExtra = false,
 		grandLabel = '',
 		copyLabel = '',
-		shareLabel = ''
+		shareLabel = '',
+		onClose = () => {},
+		onCopy = () => {},
+		onShare = () => {}
 	}: {
 		open?: boolean;
 		t: I18n;
@@ -36,192 +38,99 @@
 		grandLabel?: string;
 		copyLabel?: string;
 		shareLabel?: string;
+		onClose?: () => void;
+		onCopy?: () => void;
+		onShare?: () => void;
 	} = $props();
-
-	const dispatch = createEventDispatcher<{ close: void; copy: void; share: void }>();
 </script>
 
-<div class:open class="overlay" on:click={() => dispatch('close')}>
-	<div class="sheet" on:click|stopPropagation>
-		<button class="close" type="button" on:click={() => dispatch('close')}>x</button>
-		<div class="brand">CLEAR THE TAB</div>
-		<div class="meta">{t.tableReceipt}</div>
+<div
+	class:open
+	class="fixed inset-0 z-50 flex justify-end items-center px-4 bg-black/50 opacity-0 pointer-events-none transition-opacity duration-200"
+	class:!opacity-100={open}
+	class:!pointer-events-auto={open}
+	onclick={onClose}
+>
+	<div
+		class="relative w-min(86vw, 332px) max-h-90vh overflow-y-auto bg-surface-lighter rounded-2xl p-5"
+		onclick={(e) => e.stopPropagation()}
+	>
+		<button
+			class="absolute top-2.5 right-2.5 w-7 h-7 border-2 border-primary rounded-full bg-white cursor-pointer"
+			type="button"
+			onclick={onClose}>x</button
+		>
+		<div class="font-mono font-bold text-3xl tracking-xl text-center">CLEAR THE TAB</div>
+		<div class="font-mono text-xs tracking-lg text-muted text-center mt-1">{t.tableReceipt}</div>
 
 		{#if canSettle}
-			<div class="line strong">{receiptMeta}</div>
+			<div class="font-mono text-xs tracking-lg font-bold text-center my-2">{receiptMeta}</div>
 			{#if showPaidBy}
-				<div class="line">{paidByLine}</div>
+				<div class="font-mono text-xs text-center">{paidByLine}</div>
 			{/if}
-			<hr />
+			<hr class="border-t-2 border-dashed border-border-light my-2" />
 
 			{#if transfers.length}
-				<div class="line strong">{t.paysWhom}</div>
+				<div class="font-mono text-xs tracking-lg font-bold text-center my-2">{t.paysWhom}</div>
 				{#each transfers as tr}
-					<div class="row">
+					<div class="flex justify-between font-mono text-sm">
 						<span>{tr.from.name}</span>
 						<span>{tr.amount.toFixed(2)}</span>
 					</div>
-					<div class="row soft">
+					<div class="flex justify-between font-mono text-xs text-muted-light mb-1.5">
 						<span>{t.payVerb}</span>
 						<span>{tr.to.name}</span>
 					</div>
 				{/each}
 			{:else}
-				<div class="line success">{t.allSettled}</div>
+				<div class="font-bricolage font-bold text-lg text-success text-center my-2">
+					{t.allSettled}
+				</div>
 			{/if}
 
 			{#if !showPaidBy}
-				<hr />
+				<hr class="border-t-2 border-dashed border-border-light my-2" />
 				{#each [...shares].sort((a, b) => b.total - a.total) as s}
-					<div class="row"><span>{s.name}</span><span>{s.total.toFixed(2)}</span></div>
+					<div class="flex justify-between font-mono text-sm">
+						<span>{s.name}</span><span>{s.total.toFixed(2)}</span>
+					</div>
 				{/each}
-				<div class="line hint">{t.pickPaidHint}</div>
+				<div class="font-mono text-xs text-muted text-center my-1">{t.pickPaidHint}</div>
 			{/if}
 
-			<hr />
-			<div class="row"><span>{t.subtotal}</span><span>{subtotalLabel}</span></div>
+			<hr class="border-t-2 border-dashed border-border-light my-2" />
+			<div class="flex justify-between font-mono text-sm">
+				<span>{t.subtotal}</span><span>{subtotalLabel}</span>
+			</div>
 			{#if showTip}
-				<div class="row"><span>{t.tip}</span><span>{tipLabel}</span></div>
+				<div class="flex justify-between font-mono text-sm">
+					<span>{t.tip}</span><span>{tipLabel}</span>
+				</div>
 			{/if}
 			{#if showExtra}
-				<div class="row"><span>{t.extra}</span><span>{extraLabel}</span></div>
+				<div class="flex justify-between font-mono text-sm">
+					<span>{t.extra}</span><span>{extraLabel}</span>
+				</div>
 			{/if}
-			<div class="row total"><span>{t.total}</span><span>{grandLabel}</span></div>
+			<div class="flex justify-between font-mono font-bold text-2xl pt-2 my-2">
+				<span>{t.total}</span><span>{grandLabel}</span>
+			</div>
 
-			<div class="actions">
-				<button type="button" class="accent" on:click={() => dispatch('copy')}>{copyLabel}</button>
-				<button type="button" on:click={() => dispatch('share')}>{shareLabel}</button>
+			<div class="flex flex-col gap-2 mt-4">
+				<button
+					type="button"
+					class="h-12 border-thick border-primary rounded-md text-primary font-bricolage font-bold cursor-pointer"
+					style={`background-color: var(--accent, #ff6a3d)`}
+					onclick={onCopy}>{copyLabel}</button
+				>
+				<button
+					type="button"
+					class="h-12 border-thick border-primary rounded-md bg-white text-primary font-bricolage font-bold cursor-pointer"
+					onclick={onShare}>{shareLabel}</button
+				>
 			</div>
 		{:else}
-			<div class="empty">{t.nothing}</div>
+			<div class="text-center font-bricolage font-bold text-lg mt-4">{t.nothing}</div>
 		{/if}
 	</div>
 </div>
-
-<style>
-	.overlay {
-		position: fixed;
-		inset: 0;
-		z-index: 50;
-		display: flex;
-		justify-content: flex-end;
-		align-items: center;
-		padding: 16px;
-		background: rgba(28, 22, 14, 0.5);
-		opacity: 0;
-		pointer-events: none;
-		transition: opacity 0.25s ease;
-	}
-	.overlay.open {
-		opacity: 1;
-		pointer-events: auto;
-	}
-	.sheet {
-		position: relative;
-		width: min(86vw, 332px);
-		max-height: 90vh;
-		overflow-y: auto;
-		background: #fffdf7;
-		border-radius: 16px;
-		padding: 18px;
-	}
-	.close {
-		position: absolute;
-		top: 10px;
-		right: 10px;
-		width: 28px;
-		height: 28px;
-		border: 2px solid #211e1a;
-		border-radius: 50%;
-		background: #fff;
-		cursor: pointer;
-	}
-	.brand {
-		font:
-			700 16px 'Space Mono',
-			monospace;
-		letter-spacing: 0.14em;
-		text-align: center;
-	}
-	.meta {
-		font:
-			400 11px 'Space Mono',
-			monospace;
-		letter-spacing: 0.09em;
-		color: #8a7e6a;
-		text-align: center;
-		margin-top: 4px;
-	}
-	.line {
-		font:
-			400 11px 'Space Mono',
-			monospace;
-		text-align: center;
-		margin: 8px 0;
-	}
-	.line.strong {
-		font-weight: 700;
-	}
-	.line.success {
-		font:
-			700 13px 'Bricolage Grotesque',
-			system-ui;
-		color: #1e9e6a;
-	}
-	.line.hint {
-		font-size: 10px;
-		color: #8a7e6a;
-	}
-	.row {
-		display: flex;
-		justify-content: space-between;
-		font:
-			400 12px 'Space Mono',
-			monospace;
-		color: #6e6553;
-		padding: 2px 0;
-	}
-	.row.soft {
-		font-size: 11px;
-		color: #8a7e6a;
-		margin-bottom: 6px;
-	}
-	.row.total {
-		font-weight: 700;
-		font-size: 16px;
-		color: #1c1a17;
-		padding-top: 8px;
-	}
-	hr {
-		border: none;
-		border-top: 2px dashed #d8cdb6;
-		margin: 8px 0;
-	}
-	.actions {
-		display: flex;
-		gap: 9px;
-		margin-top: 12px;
-	}
-	.actions button {
-		flex: 1;
-		height: 46px;
-		border: 2.5px solid #211e1a;
-		border-radius: 13px;
-		background: #fff;
-		font:
-			700 14px 'Bricolage Grotesque',
-			system-ui;
-		cursor: pointer;
-	}
-	.actions .accent {
-		background: var(--accent, #ff6a3d);
-	}
-	.empty {
-		padding: 24px 10px;
-		text-align: center;
-		font:
-			700 14px 'Bricolage Grotesque',
-			system-ui;
-		color: #56503f;
-	}
-</style>

@@ -298,11 +298,17 @@
 	/>
 </svelte:head>
 
-<div class="backdrop"></div>
+<div
+	class="fixed inset-0 z-0 overflow-hidden pointer-events-none"
+	style="background-image: radial-gradient(40% 32% at 92% -3%, rgba(255, 217, 168, 0.65) 0%, transparent 70%), radial-gradient(42% 30% at 1% 96%, rgba(199, 231, 212, 0.55) 0%, transparent 70%), radial-gradient(31% 22% at 60% 42%, rgba(255, 199, 192, 0.45) 0%, transparent 70%)"
+></div>
 
-<main class="screen" style={`--accent:${currentAccent}`}>
-	<div class="shell">
-		<HeaderBar t={t()} accent={currentAccent} on:settings={() => (settingsOpen = true)} />
+<main
+	class="relative z-1 min-h-screen flex justify-center px-4 py-7 md:py-5 md:px-3"
+	style={`--accent:${currentAccent}`}
+>
+	<div class="w-full max-w-md flex flex-col gap-sm">
+		<HeaderBar t={t()} accent={currentAccent} onSettings={() => (settingsOpen = true)} />
 		<PeopleSection
 			t={t()}
 			{people}
@@ -319,26 +325,41 @@
 			onToggleAssign={({ itemId, personId }) => toggleAssign(itemId, personId)}
 			onSplitAll={({ itemId }) => splitAll(itemId)}
 		/>
-		<section class="card adjust">
+		<section class="bg-white border-thick border-primary rounded-3xl shadow-lg p-4">
 			<div class="head-row">
-				<div class="label">{t().tipService}</div>
-				<div class="amount">{tip === 0 ? t().none : `+${m(tipAmount)}`}</div>
+				<div class="text-muted text-xs font-bricolage font-extrabold tracking-xs">
+					{t().tipService}
+				</div>
+				<div class="text-success text-lg-0.5 font-mono font-bold">
+					{tip === 0 ? t().none : `+${m(tipAmount)}`}
+				</div>
 			</div>
-			<div class="tip-grid">
+			<div class="grid grid-cols-4 gap-2 md:grid-cols-2">
 				{#each [0, 5, 10, 15] as option}
-					<button type="button" class:active={tip === option} onclick={() => (tip = option)}
-						>{option}%</button
+					<button
+						type="button"
+						class:border-primary={tip === option}
+						class:bg-primary={tip === option}
+						class:text-white={tip === option}
+						class="h-12 rounded-md font-mono font-bold cursor-pointer border-thick border-border-light bg-white text-muted-light"
+						onclick={() => (tip = option)}>{option}%</button
 					>
 				{/each}
 			</div>
-			<div class="divider"></div>
-			<div class="fixed-row">
+			<div
+				class="h-0.5 bg-repeat-x"
+				style="background-image: repeating-linear-gradient(90deg, #e0d4bd 0 7px, transparent 7px 13px)"
+			></div>
+			<div class="flex justify-between items-center gap-lg md:flex-col md:items-stretch">
 				<div>
-					<div class="sub-title">{t().sharedExtra}</div>
-					<div class="sub-note">{t().sharedExtraSub}</div>
+					<div class="text-xl font-bold text-primary-light">{t().sharedExtra}</div>
+					<div class="text-xs text-muted font-bold">{t().sharedExtraSub}</div>
 				</div>
-				<div class="money-input">
-					<span>{cur()}</span>
+				<div class="relative w-35 shrink-0 md:w-full">
+					<span
+						class="absolute left-3 top-1/2 -translate-y-1/2 text-2xl font-bold text-muted-lighter"
+						>{cur()}</span
+					>
 					<input
 						type="text"
 						inputmode="decimal"
@@ -350,22 +371,29 @@
 							fixed = Number.isNaN(value) ? 0 : value;
 						}}
 						placeholder="0.00"
+						class="w-full h-12 border-thick border-primary rounded-md p-0 pl-14 font-mono font-bold text-2xl bg-surface-light"
 					/>
 				</div>
 			</div>
 		</section>
-		<section class="card">
-			<div class="head">
-				<span class="step">{t().step3}</span>
-				<h2>{t().whoPaid}</h2>
+		<section class="bg-white border-thick border-primary rounded-3xl shadow-lg p-4">
+			<div class="flex items-center gap-2 mb-1">
+				<span
+					class="text-xs font-bricolage font-extrabold tracking-xs text-white bg-primary px-2 py-0.5 rounded-xs"
+					>{t().step3}</span
+				>
+				<h2 class="m-0 text-xl font-bold text-primary-light">{t().whoPaid}</h2>
 			</div>
-			<p class="muted">{t().whoPaidSub}</p>
+			<p class="text-xs text-muted font-bold m-0 mb-3">{t().whoPaidSub}</p>
 			{#if people.length}
-				<div class="payer-row">
+				<div class="flex flex-wrap gap-2">
 					{#each people as person (person.id)}
 						<button
 							type="button"
-							class:payer-active={payers.includes(person.id)}
+							class:border-primary={payers.includes(person.id)}
+							class:bg-primary={payers.includes(person.id)}
+							class:text-white={payers.includes(person.id)}
+							class="px-4 py-2 rounded-full font-bricolage font-bold cursor-pointer border-thick border-border-light bg-white text-muted-light text-lg"
 							onclick={() => togglePayer(person.id)}
 						>
 							{person.name}
@@ -373,18 +401,29 @@
 					{/each}
 				</div>
 			{:else}
-				<div class="empty-state">{t().payerEmptyPeople}</div>
+				<div
+					class="p-4 rounded-lg bg-empty-bg border-2 border-dashed border-border-lighter text-xs text-muted font-bold"
+				>
+					{t().payerEmptyPeople}
+				</div>
 			{/if}
 		</section>
-		<div class="sticky">
-			<div class="tally-bar">
-				<div class="totals">
-					<div>{t().billTotal}</div>
-					<strong>{m(grand)}</strong>
+		<div class="sticky bottom-3 z-50">
+			<div
+				class="flex items-center gap-3 bg-primary border-thick border-primary rounded-2xl p-3 md:flex-col md:items-stretch"
+			>
+				<div class="flex-1 flex flex-col gap-0.5">
+					<div class="text-xs font-bold tracking-md text-muted-light">{t().billTotal}</div>
+					<strong class="font-mono text-5xl font-bold text-white">{m(grand)}</strong>
 				</div>
 				<button
 					type="button"
-					class:tally-disabled={!tallyEnabled}
+					class:border-primary={!tallyEnabled}
+					class:bg-transparent={!tallyEnabled}
+					class:text-muted={!tallyEnabled}
+					class:cursor-default={!tallyEnabled}
+					class="h-12 px-5 border-thick border-surface-light rounded-lg text-primary font-bricolage font-extrabold text-2xl-0.5 cursor-pointer md:w-full"
+					style={`background-color: ${tallyEnabled ? 'var(--accent, #ff6a3d)' : 'transparent'}`}
 					onclick={() => tallyEnabled && (trayOpen = true)}
 				>
 					{tallyEnabled ? t().tally : t().addPeopleItems}
@@ -411,9 +450,9 @@
 	grandLabel={m(grand)}
 	copyLabel={copied === 'copy' ? t().copied : t().copyText}
 	shareLabel={copied === 'share' ? t().linkCopied : t().shareLink}
-	on:close={() => (trayOpen = false)}
-	on:copy={onCopy}
-	on:share={onShare}
+	onClose={() => (trayOpen = false)}
+	{onCopy}
+	{onShare}
 />
 
 <SettingsModal
@@ -421,268 +460,7 @@
 	t={t()}
 	{lang}
 	{currency}
-	on:close={() => (settingsOpen = false)}
-	on:lang={(e) => (lang = e.detail.value)}
-	on:currency={(e) => (currency = e.detail.value)}
+	onClose={() => (settingsOpen = false)}
+	onLang={(value: Lang) => (lang = value)}
+	onCurrency={(value: (typeof CURRENCIES)[number]) => (currency = value)}
 />
-
-<style>
-	:global(body) {
-		margin: 0;
-		background: #fbf1e2;
-		font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', system-ui, sans-serif;
-		-webkit-font-smoothing: antialiased;
-	}
-	.backdrop {
-		position: fixed;
-		inset: 0;
-		z-index: 0;
-		overflow: hidden;
-		pointer-events: none;
-		background:
-			radial-gradient(40% 32% at 92% -3%, rgba(255, 217, 168, 0.65) 0%, transparent 70%),
-			radial-gradient(42% 30% at 1% 96%, rgba(199, 231, 212, 0.55) 0%, transparent 70%),
-			radial-gradient(31% 22% at 60% 42%, rgba(255, 199, 192, 0.45) 0%, transparent 70%);
-	}
-	.screen {
-		position: relative;
-		z-index: 1;
-		min-height: 100vh;
-		display: flex;
-		justify-content: center;
-		padding: 26px 16px;
-	}
-	.shell {
-		width: 100%;
-		max-width: 452px;
-		display: flex;
-		flex-direction: column;
-		gap: 15px;
-	}
-	.card {
-		background: #fff;
-		border: 2.5px solid #211e1a;
-		border-radius: 22px;
-		box-shadow: 4px 4px 0 #211e1a;
-		padding: 17px;
-	}
-	.head {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		margin-bottom: 4px;
-	}
-	.step {
-		font:
-			800 12px 'Bricolage Grotesque',
-			system-ui;
-		letter-spacing: 0.02em;
-		color: #fff;
-		background: #211e1a;
-		padding: 3px 9px;
-		border-radius: 7px;
-	}
-	h2 {
-		margin: 0;
-		font-size: 14px;
-		font-weight: 700;
-		color: #3a332a;
-	}
-	.muted {
-		font-size: 12px;
-		color: #9a917f;
-		font-weight: 600;
-		margin: 0 0 12px;
-	}
-	.adjust {
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-	}
-	.head-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-	.label {
-		font:
-			800 12px 'Bricolage Grotesque',
-			system-ui;
-		letter-spacing: 0.02em;
-		color: #8a7e6a;
-	}
-	.amount {
-		font:
-			700 13px 'Space Mono',
-			monospace;
-		color: #1e9e6a;
-	}
-	.tip-grid {
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 8px;
-	}
-	.tip-grid button {
-		height: 46px;
-		border-radius: 13px;
-		font:
-			700 14.5px 'Space Mono',
-			monospace;
-		cursor: pointer;
-		border: 2.5px solid #cfc4ae;
-		background: #fff;
-		color: #9a917f;
-	}
-	.tip-grid .active {
-		border-color: #211e1a;
-		background: #211e1a;
-		color: #fff;
-	}
-	.divider {
-		height: 2px;
-		background: repeating-linear-gradient(90deg, #e0d4bd 0 7px, transparent 7px 13px);
-	}
-	.fixed-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 14px;
-	}
-	.sub-title {
-		font-size: 14px;
-		font-weight: 700;
-		color: #3a332a;
-	}
-	.sub-note {
-		font-size: 12px;
-		color: #9a917f;
-		font-weight: 600;
-	}
-	.money-input {
-		position: relative;
-		width: 140px;
-		flex-shrink: 0;
-	}
-	.money-input span {
-		position: absolute;
-		left: 13px;
-		top: 50%;
-		transform: translateY(-50%);
-		font-size: 15px;
-		font-weight: 700;
-		color: #b3a892;
-	}
-	.money-input input {
-		width: 100%;
-		height: 46px;
-		border: 2.5px solid #211e1a;
-		border-radius: 13px;
-		padding: 0 13px 0 52px;
-		font:
-			700 15px 'Space Mono',
-			monospace;
-		background: #fffdf8;
-	}
-	.payer-row {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-	}
-	.payer-row button {
-		padding: 7px 14px;
-		border-radius: 999px;
-		font:
-			700 13px 'Bricolage Grotesque',
-			system-ui;
-		cursor: pointer;
-		border: 2px solid #cfc4ae;
-		background: #fff;
-		color: #9a917f;
-	}
-	.payer-row .payer-active {
-		border-color: #211e1a;
-		background: #211e1a;
-		color: #fff;
-	}
-	.empty-state {
-		padding: 14px 15px;
-		border-radius: 14px;
-		background: #fbf4e7;
-		border: 2px dashed #e0d4bd;
-		font-size: 13px;
-		color: #8a7e6a;
-		font-weight: 600;
-	}
-	.sticky {
-		position: sticky;
-		bottom: 14px;
-		z-index: 6;
-	}
-	.tally-bar {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		background: #211e1a;
-		border: 2.5px solid #211e1a;
-		border-radius: 20px;
-		padding: 11px 12px 11px 18px;
-	}
-	.totals {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		gap: 1px;
-	}
-	.totals div {
-		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: 0.06em;
-		color: #9a8f7c;
-	}
-	.totals strong {
-		font:
-			700 22px 'Space Mono',
-			monospace;
-		color: #fff;
-	}
-	.tally-bar button {
-		height: 50px;
-		padding: 0 20px;
-		border: 2.5px solid #fffdf8;
-		border-radius: 14px;
-		background: var(--accent, #ff6a3d);
-		color: #211e1a;
-		font:
-			800 15.5px 'Bricolage Grotesque',
-			system-ui;
-		cursor: pointer;
-	}
-	.tally-bar .tally-disabled {
-		border-color: #3a352c;
-		background: transparent;
-		color: #6e6553;
-		cursor: default;
-	}
-	@media (max-width: 640px) {
-		.screen {
-			padding: 18px 12px;
-		}
-		.fixed-row {
-			flex-direction: column;
-			align-items: stretch;
-		}
-		.money-input {
-			width: 100%;
-		}
-		.tip-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
-		.tally-bar {
-			flex-direction: column;
-			align-items: stretch;
-		}
-		.tally-bar button {
-			width: 100%;
-		}
-	}
-</style>
