@@ -90,7 +90,8 @@ export const STR: Record<Lang, I18n> = {
 		payVerb: 'pay',
 		allSettled: 'All square - nobody owes a thing.',
 		pickPaidHint: 'Set who paid above to get transfers.',
-		paidBy: 'PAID BY'
+		paidBy: 'PAID BY',
+		resetTab: 'Reset tab'
 	},
 	es: {
 		subtitle: 'Quien pidio que? Resuelto en 60 segundos.',
@@ -148,7 +149,8 @@ export const STR: Record<Lang, I18n> = {
 		payVerb: 'paga a',
 		allSettled: 'Todo en paz, nadie debe nada.',
 		pickPaidHint: 'Marca quien pago para ver transferencias.',
-		paidBy: 'PAGO'
+		paidBy: 'PAGO',
+		resetTab: 'Reiniciar cuenta'
 	},
 	pt: {
 		subtitle: 'Quem comeu o que? Resolvido em 60 segundos.',
@@ -206,7 +208,8 @@ export const STR: Record<Lang, I18n> = {
 		payVerb: 'paga a',
 		allSettled: 'Tudo certo, ninguem deve nada.',
 		pickPaidHint: 'Marca quem pagou para ver transferencias.',
-		paidBy: 'PAGOU'
+		paidBy: 'PAGOU',
+		resetTab: 'Reiniciar conta'
 	},
 	fr: {
 		subtitle: 'Qui a pris quoi? Regle en 60 secondes.',
@@ -264,6 +267,7 @@ export const STR: Record<Lang, I18n> = {
 		payVerb: 'paie',
 		allSettled: 'Tout est regle, personne ne doit rien.',
 		pickPaidHint: 'Indique qui a paye pour voir les transferts.',
-		paidBy: 'PAYE PAR'
+		paidBy: 'PAYE PAR',
+		resetTab: 'Reinitialiser'
 	}
 };

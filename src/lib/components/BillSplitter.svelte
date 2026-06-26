@@ -83,6 +83,20 @@
 		});
 	}
 
+	function resetTab(): void {
+		people = [];
+		items = [];
+		tip = 0;
+		fixed = 0;
+		payers = [];
+		try {
+			localStorage.removeItem(STORAGE_KEY);
+		} catch {
+			// Ignore storage errors.
+		}
+		settingsOpen = false;
+	}
+
 	function togglePayer(id: string): void {
 		payers = payers.includes(id) ? payers.filter((payer) => payer !== id) : [...payers, id];
 	}
@@ -412,4 +426,5 @@
 	onClose={() => (settingsOpen = false)}
 	onLang={(value: Lang) => (lang = value)}
 	onCurrency={(value: (typeof CURRENCIES)[number]) => (currency = value)}
+	onReset={resetTab}
 />

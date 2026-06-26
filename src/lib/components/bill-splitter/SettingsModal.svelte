@@ -9,7 +9,8 @@
 		currency,
 		onClose = () => {},
 		onLang = () => {},
-		onCurrency = () => {}
+		onCurrency = () => {},
+		onReset = () => {}
 	}: {
 		open?: boolean;
 		t: I18n;
@@ -18,6 +19,7 @@
 		onClose?: () => void;
 		onLang?: (value: Lang) => void;
 		onCurrency?: (value: (typeof CURRENCIES)[number]) => void;
+		onReset?: () => void;
 	} = $props();
 </script>
 
@@ -77,6 +79,11 @@
 			{/each}
 		</div>
 
+		<button
+			class="w-full h-12 border-thick border-border-light rounded-md text-muted font-bricolage font-extrabold text-2xl-0.5 cursor-pointer mb-2"
+			type="button"
+			onclick={onReset}>{t.resetTab}</button
+		>
 		<button
 			class="w-full h-12 border-thick border-primary rounded-md text-primary font-bricolage font-extrabold text-2xl-0.5 cursor-pointer"
 			type="button"

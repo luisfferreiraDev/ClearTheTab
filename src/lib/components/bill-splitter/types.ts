@@ -81,4 +81,5 @@ export interface I18n {
 	allSettled: string;
 	pickPaidHint: string;
 	paidBy: string;
+	resetTab: string;
 }
