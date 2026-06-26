@@ -10,12 +10,15 @@
 
 <div class="flex items-center gap-lg py-0.5 px-xs">
 	<div
-		class="w-12 h-12 rounded-lg border-thick border-primary shadow-md grid place-items-center shrink-0"
-		style={`background:${accent};transform:rotate(-4deg)`}
+		class="w-12 h-12 rounded-lg border-thick border-primary shadow-md grid place-items-center shrink-0 bg-accent"
+		style={`transform:rotate(-4deg)`}
 	>
-		<span class="font-bricolage font-extrabold text-6xl text-primary" style="transform:rotate(4deg)"
-			>T</span
-		>
+		<img
+			src="/favicon/favicon-64.png"
+			alt="Clear The Tab"
+			class="w-10 h-10"
+			style="transform:rotate(4deg)"
+		/>
 	</div>
 	<div class="min-w-0 flex-1">
 		<h1

@@ -1,5 +1,67 @@
 @import 'tailwindcss';
 
+@theme {
+	/* Colors */
+	--color-primary: #211e1a;
+	--color-primary-light: #3a332a;
+	--color-surface-light: #fffdf8;
+	--color-surface-lighter: #fffdf7;
+	--color-surface-bg: #fbf1e2;
+	--color-muted: #8a7e6a;
+	--color-muted-light: #9a917f;
+	--color-muted-lighter: #b3a892;
+	--color-border-light: #cfc4ae;
+	--color-border-lighter: #e0d4bd;
+	--color-empty-bg: #fbf4e7;
+	--color-success: #1e9e6a;
+	--color-accent: #ff6a3d;
+	--color-accent-orange: #ff6a3d;
+
+	/* Font families */
+	--font-bricolage: 'Bricolage Grotesque', system-ui;
+	--font-mono: 'Space Mono', monospace;
+
+	/* Font sizes */
+	--text-xs: 10px;
+	--text-sm: 11px;
+	--text-base: 12px;
+	--text-md: 12.5px;
+	--text-lg: 13px;
+	--text-xl: 14px;
+	--text-2xl: 15px;
+	--text-3xl: 16px;
+	--text-4xl: 19px;
+	--text-5xl: 22px;
+	--text-6xl: 24px;
+
+	/* Border radius */
+	--radius-xs: 7px;
+	--radius-sm: 12px;
+	--radius-md: 13px;
+	--radius-lg: 14px;
+	--radius-xl: 16px;
+	--radius-2xl: 20px;
+	--radius-3xl: 22px;
+	--radius-full: 999px;
+
+	/* Box shadows */
+	--shadow-sm: 2px 2px 0 #211e1a;
+	--shadow-md: 3px 3px 0 #211e1a;
+	--shadow-lg: 4px 4px 0 #211e1a;
+	--shadow-xl: 5px 5px 0 #211e1a;
+	--shadow-none: none;
+
+	/* Border widths */
+	--border-width-thick: 2.5px;
+
+	/* Letter spacing */
+	--tracking-xs: 0.02em;
+	--tracking-sm: 0.04em;
+	--tracking-md: 0.06em;
+	--tracking-lg: 0.09em;
+	--tracking-xl: 0.14em;
+}
+
 @layer base {
 	body {
 		@apply m-0 font-sans antialiased;

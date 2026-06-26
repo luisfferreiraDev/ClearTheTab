@@ -303,10 +303,7 @@
 	style="background-image: radial-gradient(40% 32% at 92% -3%, rgba(255, 217, 168, 0.65) 0%, transparent 70%), radial-gradient(42% 30% at 1% 96%, rgba(199, 231, 212, 0.55) 0%, transparent 70%), radial-gradient(31% 22% at 60% 42%, rgba(255, 199, 192, 0.45) 0%, transparent 70%)"
 ></div>
 
-<main
-	class="relative z-1 min-h-screen flex justify-center px-4 py-7 md:py-5 md:px-3"
-	style={`--accent:${currentAccent}`}
->
+<main class="relative z-1 min-h-screen flex justify-center px-4 py-7 md:py-5 md:px-3">
 	<div class="w-full max-w-md flex flex-col gap-sm">
 		<HeaderBar t={t()} accent={currentAccent} onSettings={() => (settingsOpen = true)} />
 		<PeopleSection
