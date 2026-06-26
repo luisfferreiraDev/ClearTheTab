@@ -11,7 +11,6 @@ export const PALETTE = [
 	'#5B8C2A'
 ];
 
-
 export const LANGS: Array<{ code: Lang; label: string }> = [
 	{ code: 'en', label: 'English' },
 	{ code: 'es', label: 'Espanol' },
@@ -55,7 +54,7 @@ export const STR: Record<Lang, I18n> = {
 		sharedExtra: 'Shared extra',
 		sharedExtraSub: 'Cover charge, water, split equally',
 		billTotal: 'BILL TOTAL',
-		tally: 'Tally up',
+		tally: 'Clear it',
 		addPeopleItems: 'Add people and items',
 		tableReceipt: 'TABLE RECEIPT',
 		subtotal: 'SUBTOTAL',
@@ -266,6 +265,6 @@ export const STR: Record<Lang, I18n> = {
 		pickPaidHint: 'Indique qui a paye pour voir les transferts.',
 		paidBy: 'PAYE PAR',
 		resetTab: 'Reinitialiser',
-		installApp: 'Ajouter a l\'accueil'
+		installApp: "Ajouter a l'accueil"
 	}
 };
