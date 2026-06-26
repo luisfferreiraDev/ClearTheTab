@@ -83,4 +83,5 @@ export interface I18n {
 	paidBy: string;
 	resetTab: string;
 	installApp: string;
+	receiptTitlePh: string;
 }

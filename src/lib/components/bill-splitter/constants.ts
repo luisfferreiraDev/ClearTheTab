@@ -85,7 +85,8 @@ export const STR: Record<Lang, I18n> = {
 		pickPaidHint: 'Set who paid above to get transfers.',
 		paidBy: 'PAID BY',
 		resetTab: 'Reset tab',
-		installApp: 'Add to home screen'
+		installApp: 'Add to home screen',
+		receiptTitlePh: 'Receipt name (optional)'
 	},
 	es: {
 		subtitle: 'Quien pidio que? Resuelto en 60 segundos.',
@@ -145,7 +146,8 @@ export const STR: Record<Lang, I18n> = {
 		pickPaidHint: 'Marca quien pago para ver transferencias.',
 		paidBy: 'PAGO',
 		resetTab: 'Reiniciar cuenta',
-		installApp: 'Anadir a inicio'
+		installApp: 'Anadir a inicio',
+		receiptTitlePh: 'Nombre del recibo (opcional)'
 	},
 	pt: {
 		subtitle: 'Quem comeu o que? Resolvido em 60 segundos.',
@@ -205,7 +207,8 @@ export const STR: Record<Lang, I18n> = {
 		pickPaidHint: 'Marca quem pagou para ver transferencias.',
 		paidBy: 'PAGOU',
 		resetTab: 'Reiniciar conta',
-		installApp: 'Adicionar ao ecra inicial'
+		installApp: 'Adicionar ao ecra inicial',
+		receiptTitlePh: 'Nome do talao (opcional)'
 	},
 	fr: {
 		subtitle: 'Qui a pris quoi? Regle en 60 secondes.',
@@ -265,6 +268,7 @@ export const STR: Record<Lang, I18n> = {
 		pickPaidHint: 'Indique qui a paye pour voir les transferts.',
 		paidBy: 'PAYE PAR',
 		resetTab: 'Reinitialiser',
-		installApp: "Ajouter a l'accueil"
+		installApp: "Ajouter a l'accueil",
+		receiptTitlePh: 'Nom du recu (optionnel)'
 	}
 };

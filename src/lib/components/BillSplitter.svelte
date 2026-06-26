@@ -23,6 +23,8 @@
 	let payers = $state<string[]>([]);
 	let canInstall = $state(false);
 	let installPrompt = $state<{ prompt: () => Promise<void> } | null>(null);
+	let receiptTitle = $state('');
+	let receiptDate = $state('');
 
 	let initialized = false;
 	const STORAGE_KEY = 'clear-the-tab-state';
@@ -90,6 +92,8 @@
 		tip = 0;
 		fixed = 0;
 		payers = [];
+		receiptTitle = '';
+		receiptDate = '';
 		try {
 			localStorage.removeItem(STORAGE_KEY);
 		} catch {
@@ -187,7 +191,9 @@
 			fixed,
 			lang,
 			currency,
-			payers
+			payers,
+			receiptTitle,
+			receiptDate
 		};
 		return encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(data)))));
 	}
@@ -203,6 +209,8 @@
 				lang?: Lang;
 				currency?: (typeof CURRENCIES)[number];
 				payers?: string[];
+				receiptTitle?: string;
+				receiptDate?: string;
 			};
 			if (Array.isArray(parsed.people)) people = parsed.people;
 			if (Array.isArray(parsed.items)) items = parsed.items;
@@ -211,6 +219,8 @@
 			if (parsed.lang) lang = parsed.lang;
 			if (parsed.currency) currency = parsed.currency;
 			if (Array.isArray(parsed.payers)) payers = parsed.payers;
+			if (typeof parsed.receiptTitle === 'string') receiptTitle = parsed.receiptTitle;
+			if (typeof parsed.receiptDate === 'string') receiptDate = parsed.receiptDate;
 		} catch {
 			// Ignore malformed state in hash.
 		}
@@ -235,7 +245,7 @@
 
 	$effect(() => {
 		// Reference all reactive state to establish tracking on first run.
-		people; items; tip; fixed; lang; currency; payers;
+		people; items; tip; fixed; lang; currency; payers; receiptTitle; receiptDate;
 		if (!initialized) return;
 		saveToStorage();
 	});
@@ -417,6 +427,25 @@
 
 			dashed(y);
 			y += 16;
+
+			// Optional receipt title & date
+			if (receiptTitle) {
+				y += 16;
+				txt(receiptTitle, W / 2, y, 15, 'center', true, DARK);
+				y += 8;
+			}
+			if (receiptDate) {
+				const [yr, mo, dy] = receiptDate.split('-');
+				const formatted = `${dy}/${mo}/${yr}`;
+				y += 12;
+				txt(formatted, W / 2, y, 11, 'center', false, MUTED);
+				y += 8;
+			}
+			if (receiptTitle || receiptDate) {
+				y += 8;
+				dashed(y);
+				y += 16;
+			}
 
 			// Meta
 			y += 11;
@@ -704,6 +733,8 @@
 	open={trayOpen}
 	t={t()}
 	canSettle={tallyEnabled}
+	{receiptTitle}
+	{receiptDate}
 	{receiptMeta}
 	paidByLine={`${t().paidBy} ${payerNames.join(', ').toUpperCase()}`}
 	showPaidBy={payerIds.length > 0}
@@ -720,6 +751,8 @@
 	onClose={() => (trayOpen = false)}
 	{onCopy}
 	{onShare}
+	onTitleChange={(v) => (receiptTitle = v)}
+	onDateChange={(v) => (receiptDate = v)}
 />
 
 <SettingsModal

@@ -5,6 +5,8 @@
 		open = false,
 		t,
 		canSettle = false,
+		receiptTitle = '',
+		receiptDate = '',
 		receiptMeta = '',
 		paidByLine = '',
 		showPaidBy = false,
@@ -20,11 +22,15 @@
 		shareLabel = '',
 		onClose = () => {},
 		onCopy = () => {},
-		onShare = () => {}
+		onShare = () => {},
+		onTitleChange = (_: string) => {},
+		onDateChange = (_: string) => {}
 	}: {
 		open?: boolean;
 		t: I18n;
 		canSettle?: boolean;
+		receiptTitle?: string;
+		receiptDate?: string;
 		receiptMeta?: string;
 		paidByLine?: string;
 		showPaidBy?: boolean;
@@ -41,6 +47,8 @@
 		onClose?: () => void;
 		onCopy?: () => void;
 		onShare?: () => void;
+		onTitleChange?: (v: string) => void;
+		onDateChange?: (v: string) => void;
 	} = $props();
 </script>
 
@@ -97,6 +105,21 @@
 					{t.tableReceipt}
 				</div>
 				<div class="mt-2.5 border-t border-dashed border-[#c8bca6]"></div>
+				<!-- Optional title & date -->
+				<input
+					type="text"
+					value={receiptTitle}
+					placeholder={t.receiptTitlePh}
+					maxlength="40"
+					oninput={(e) => onTitleChange((e.target as HTMLInputElement).value)}
+					class="w-full bg-transparent border-none outline-none text-center font-mono font-bold text-[13px] tracking-[0.08em] text-[#211e1a] placeholder:text-[#c8bca6] mt-2"
+				/>
+				<input
+					type="date"
+					value={receiptDate}
+					oninput={(e) => onDateChange((e.target as HTMLInputElement).value)}
+					class="w-full bg-transparent border-none outline-none text-center font-mono text-[9px] tracking-[0.06em] text-[#9a8e78] mt-0.5 [color-scheme:light]"
+				/>
 			</div>
 
 			{#if canSettle}
