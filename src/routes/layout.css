@@ -20,3 +20,180 @@
 		border-radius: 4px;
 	}
 }
+
+@layer components {
+	/* Display Styles */
+	.text-display-lg {
+		@apply text-6xl leading-tight;
+		font-family: 'Bricolage Grotesque', system-ui;
+		font-weight: 800;
+		letter-spacing: -0.02em;
+	}
+
+	.text-display-md {
+		@apply text-5xl leading-tight;
+		font-family: 'Bricolage Grotesque', system-ui;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+	}
+
+	.text-display-sm {
+		@apply text-4xl leading-tight;
+		font-family: 'Bricolage Grotesque', system-ui;
+		font-weight: 700;
+		letter-spacing: -0.01em;
+	}
+
+	/* Heading Styles */
+	.text-heading-lg {
+		@apply text-3xl;
+		font-family: 'Bricolage Grotesque', system-ui;
+		font-weight: 800;
+		letter-spacing: -0.01em;
+	}
+
+	.text-heading-md {
+		@apply text-2xl;
+		font-family: 'Bricolage Grotesque', system-ui;
+		font-weight: 700;
+		font-size: 15.5px;
+		letter-spacing: 0em;
+	}
+
+	.text-heading-sm {
+		@apply text-xl;
+		font-family: 'Bricolage Grotesque', system-ui;
+		font-weight: 700;
+		font-size: 14.5px;
+		letter-spacing: 0.02em;
+	}
+
+	/* Title Styles */
+	.text-title-lg {
+		@apply text-lg;
+		font-family: 'Bricolage Grotesque', system-ui;
+		font-weight: 700;
+		letter-spacing: 0.02em;
+	}
+
+	.text-title-md {
+		@apply text-base;
+		font-family: 'Bricolage Grotesque', system-ui;
+		font-weight: 700;
+		letter-spacing: 0.02em;
+	}
+
+	.text-title-sm {
+		@apply text-sm;
+		font-family: 'Bricolage Grotesque', system-ui;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+	}
+
+	/* Subtitle Styles */
+	.text-subtitle-lg {
+		@apply text-lg;
+		font-family: 'Bricolage Grotesque', system-ui;
+		font-weight: 600;
+		letter-spacing: 0.01em;
+	}
+
+	.text-subtitle-md {
+		@apply text-base;
+		font-family: 'Bricolage Grotesque', system-ui;
+		font-weight: 600;
+		letter-spacing: 0.01em;
+	}
+
+	.text-subtitle-sm {
+		@apply text-sm;
+		font-family: 'Bricolage Grotesque', system-ui;
+		font-weight: 400;
+		letter-spacing: 0.02em;
+	}
+
+	/* Body Styles */
+	.text-body-lg {
+		@apply text-lg;
+		letter-spacing: 0.01em;
+	}
+
+	.text-body-md {
+		@apply text-base;
+		letter-spacing: 0.01em;
+	}
+
+	.text-body-sm {
+		@apply text-sm;
+		letter-spacing: 0.01em;
+	}
+
+	/* Label Styles */
+	.text-label-lg {
+		@apply text-base;
+		font-family: 'Bricolage Grotesque', system-ui;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+	}
+
+	.text-label-md {
+		@apply text-sm;
+		font-family: 'Bricolage Grotesque', system-ui;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+	}
+
+	.text-label-sm {
+		@apply text-xs;
+		font-family: 'Bricolage Grotesque', system-ui;
+		font-weight: 700;
+		font-size: 10.5px;
+		letter-spacing: 0.04em;
+	}
+
+	/* Caption Styles */
+	.text-caption-lg {
+		@apply text-sm;
+		letter-spacing: 0.02em;
+	}
+
+	.text-caption-md {
+		@apply text-xs;
+		font-size: 10.5px;
+		letter-spacing: 0.02em;
+	}
+
+	.text-caption-sm {
+		@apply text-xs;
+		letter-spacing: 0.02em;
+	}
+
+	/* Mono/Code Styles */
+	.text-mono-lg {
+		@apply text-lg;
+		font-family: 'Space Mono', monospace;
+		font-weight: 700;
+		letter-spacing: 0.09em;
+	}
+
+	.text-mono-md {
+		@apply text-base;
+		font-family: 'Space Mono', monospace;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+	}
+
+	.text-mono-sm {
+		@apply text-sm;
+		font-family: 'Space Mono', monospace;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+	}
+
+	.text-mono-xs {
+		@apply text-xs;
+		font-family: 'Space Mono', monospace;
+		font-weight: 700;
+		letter-spacing: 0.02em;
+	}
+}
