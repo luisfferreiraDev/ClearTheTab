@@ -3,9 +3,8 @@
 
 	let {
 		t,
-		accent = '#FF6A3D',
 		onSettings = () => {}
-	}: { t: I18n; accent?: string; onSettings?: () => void } = $props();
+	}: { t: I18n; onSettings?: () => void } = $props();
 </script>
 
 <div class="flex items-center gap-4 py-0.5 px-xs">

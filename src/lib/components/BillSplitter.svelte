@@ -7,7 +7,7 @@
 	import SettingsModal from './bill-splitter/SettingsModal.svelte';
 	import TipServiceSection from './bill-splitter/TipServiceSection.svelte';
 	import WhoPaidSection from './bill-splitter/WhoPaidSection.svelte';
-	import { ACCENTS, CURRENCIES, CURRENCY_SYMBOL, PALETTE, STR } from './bill-splitter/constants';
+	import { CURRENCIES, CURRENCY_SYMBOL, PALETTE, STR } from './bill-splitter/constants';
 	import type { BillItem, Lang, Person, PersonShare, Transfer } from './bill-splitter/types';
 
 	let people = $state<Person[]>([]);
@@ -21,7 +21,6 @@
 	let lang = $state<Lang>('en');
 	let currency = $state<(typeof CURRENCIES)[number]>('EUR');
 	let payers = $state<string[]>([]);
-	let accent = $state<keyof typeof ACCENTS>('Tangerine');
 
 	let initialized = false;
 	const STORAGE_KEY = 'clear-the-tab-state';
@@ -186,8 +185,7 @@
 			fixed,
 			lang,
 			currency,
-			payers,
-			accent
+			payers
 		};
 		return encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(data)))));
 	}
@@ -203,7 +201,6 @@
 				lang?: Lang;
 				currency?: (typeof CURRENCIES)[number];
 				payers?: string[];
-				accent?: keyof typeof ACCENTS;
 			};
 			if (Array.isArray(parsed.people)) people = parsed.people;
 			if (Array.isArray(parsed.items)) items = parsed.items;
@@ -212,7 +209,6 @@
 			if (parsed.lang) lang = parsed.lang;
 			if (parsed.currency) currency = parsed.currency;
 			if (Array.isArray(parsed.payers)) payers = parsed.payers;
-			if (parsed.accent) accent = parsed.accent;
 		} catch {
 			// Ignore malformed state in hash.
 		}
@@ -237,7 +233,7 @@
 
 	$effect(() => {
 		// Reference all reactive state to establish tracking on first run.
-		people; items; tip; fixed; lang; currency; payers; accent;
+		people; items; tip; fixed; lang; currency; payers;
 		if (!initialized) return;
 		saveToStorage();
 	});
@@ -331,7 +327,6 @@
 			.map((id) => people.find((person) => person.id === id)?.name)
 			.filter((value): value is string => Boolean(value))
 	);
-	const currentAccent = $derived(ACCENTS[accent]);
 </script>
 
 <svelte:head>
@@ -350,7 +345,7 @@
 
 <main class="relative z-1 min-h-screen flex justify-center px-4 py-7 md:py-5 md:px-3">
 	<div class="w-full max-w-md flex flex-col gap-6">
-		<HeaderBar t={t()} accent={currentAccent} onSettings={() => (settingsOpen = true)} />
+		<HeaderBar t={t()} onSettings={() => (settingsOpen = true)} />
 		<PeopleSection
 			t={t()}
 			{people}

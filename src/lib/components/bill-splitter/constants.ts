@@ -11,12 +11,6 @@ export const PALETTE = [
 	'#5B8C2A'
 ];
 
-export const ACCENTS = {
-	Tangerine: '#FF6A3D',
-	Emerald: '#12B07F',
-	Cobalt: '#3B6CF6',
-	Bubblegum: '#FF5C8A'
-} as const;
 
 export const LANGS: Array<{ code: Lang; label: string }> = [
 	{ code: 'en', label: 'English' },
