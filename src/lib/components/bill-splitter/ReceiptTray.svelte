@@ -205,7 +205,7 @@
 					<button
 						type="button"
 						class="h-10 border-[2px] border-[#211e1a] rounded-[3px] bg-[#211e1a] text-[#fef9ef] font-mono text-[11px] font-bold tracking-[0.1em] cursor-pointer"
-						onclick={onCopy}>{copyLabel}</button
+						onclick={onShare}>{shareLabel}</button
 					>
 				</div>
 			{:else}

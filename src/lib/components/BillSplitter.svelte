@@ -294,11 +294,295 @@
 		flash('copy');
 	}
 
-	function onShare(): void {
-		const url = `${location.origin}${location.pathname}#d=${encodeState()}`;
-		history.replaceState(null, '', url);
-		void copyToClipboard(url);
-		flash('share');
+	async function generateReceiptImage(): Promise<Blob> {
+		await document.fonts.ready;
+
+		const W = 600;
+		const DPR = 2;
+		const PAD = 44;
+		const ZH = 16;
+		const TOOTH_W = 12;
+		const CREAM = '#fef9ef';
+		const DARK = '#211e1a';
+		const MUTED = '#9a8e78';
+		const LIGHT = '#b3a48e';
+		const DASH_CLR = '#c8bca6';
+		const GREEN = '#1e9e6a';
+
+		const i18n = t();
+		const { perPerson, grand, itemsSubtotal } = compute();
+		const { payerIds, transfers } = settlement();
+		const showPaidBy = payerIds.length > 0;
+		const tipAmt = itemsSubtotal * (tip / 100);
+		const payerNamesStr = payerIds
+			.map((id) => people.find((p) => p.id === id)?.name)
+			.filter((v): v is string => Boolean(v))
+			.join(', ')
+			.toUpperCase();
+		const metaStr = `${n} ${n === 1 ? 'guest' : 'guests'} — ${items.length} ${items.length === 1 ? 'item' : 'items'}`;
+
+		function paint(ctx: CanvasRenderingContext2D | null, H: number): number {
+			// ── Background + paper body ──────────────────────────────────────
+			if (ctx) {
+				ctx.fillStyle = '#e8dfd3';
+				ctx.fillRect(0, 0, W, H);
+				ctx.fillStyle = CREAM;
+				ctx.fillRect(0, ZH, W, H - ZH * 2);
+
+				// Top zigzag — teeth point up
+				const topTroughY = Math.round(ZH * 8 / 12);
+				ctx.fillStyle = CREAM;
+				ctx.beginPath();
+				ctx.moveTo(0, topTroughY);
+				for (let x = 0; x < W; x += TOOTH_W) {
+					ctx.lineTo(x + TOOTH_W / 2, 0);
+					ctx.lineTo(x + TOOTH_W, topTroughY);
+				}
+				ctx.lineTo(W, ZH);
+				ctx.lineTo(0, ZH);
+				ctx.closePath();
+				ctx.fill();
+
+				// Bottom zigzag — teeth point down
+				const btY = H - ZH;
+				const btTroughY = btY + Math.round(ZH * 4 / 12);
+				ctx.fillStyle = CREAM;
+				ctx.beginPath();
+				ctx.moveTo(0, btY);
+				ctx.lineTo(W, btY);
+				ctx.lineTo(W, btTroughY);
+				for (let x = W; x > 0; x -= TOOTH_W) {
+					ctx.lineTo(x - TOOTH_W / 2, H);
+					ctx.lineTo(x - TOOTH_W, btTroughY);
+				}
+				ctx.lineTo(0, btTroughY);
+				ctx.closePath();
+				ctx.fill();
+			}
+
+			// ── Text / line helpers ──────────────────────────────────────────
+			const txt = (
+				str: string,
+				tx: number,
+				ty: number,
+				size: number,
+				align: CanvasTextAlign,
+				bold: boolean,
+				color: string
+			) => {
+				if (!ctx) return;
+				ctx.font = `${bold ? 'bold ' : ''}${size}px 'Space Mono', monospace`;
+				ctx.fillStyle = color;
+				ctx.textAlign = align;
+				ctx.textBaseline = 'alphabetic';
+				ctx.fillText(str, tx, ty);
+			};
+
+			const dashed = (ty: number) => {
+				if (!ctx) return;
+				ctx.save();
+				ctx.strokeStyle = DASH_CLR;
+				ctx.lineWidth = 1;
+				ctx.setLineDash([4, 4]);
+				ctx.beginPath();
+				ctx.moveTo(PAD, ty);
+				ctx.lineTo(W - PAD, ty);
+				ctx.stroke();
+				ctx.restore();
+			};
+
+			const solid = (ty: number) => {
+				if (!ctx) return;
+				ctx.save();
+				ctx.strokeStyle = 'rgba(33,30,26,0.2)';
+				ctx.lineWidth = 1.5;
+				ctx.setLineDash([]);
+				ctx.beginPath();
+				ctx.moveTo(PAD, ty);
+				ctx.lineTo(W - PAD, ty);
+				ctx.stroke();
+				ctx.restore();
+			};
+
+			// ── Layout ───────────────────────────────────────────────────────
+			let y = ZH + 28;
+
+			// Header
+			y += 17;
+			txt('CLEAR THE TAB', W / 2, y, 17, 'center', true, DARK);
+			y += 8;
+			y += 10;
+			txt(i18n.tableReceipt.toUpperCase(), W / 2, y, 10, 'center', false, MUTED);
+			y += 16;
+
+			dashed(y);
+			y += 16;
+
+			// Meta
+			y += 11;
+			txt(metaStr, W / 2, y, 11, 'center', false, MUTED);
+			y += 8;
+
+			// Paid-by line
+			if (showPaidBy) {
+				y += 11;
+				txt(`${i18n.paidBy} ${payerNamesStr}`, W / 2, y, 11, 'center', false, MUTED);
+				y += 8;
+			}
+
+			// Transfers / allSettled
+			if (transfers.length) {
+				y += 8;
+				dashed(y);
+				y += 16;
+				y += 10;
+				txt(i18n.paysWhom, W / 2, y, 10, 'center', false, MUTED);
+				y += 16;
+				for (const tr of transfers) {
+					y += 16;
+					txt(tr.from.name, PAD, y, 14, 'left', true, DARK);
+					txt(tr.amount.toFixed(2), W - PAD, y, 14, 'right', true, DARK);
+					y += 4;
+					y += 12;
+					txt(`↳ ${i18n.payVerb} ${tr.to.name}`, PAD + 16, y, 12, 'left', false, MUTED);
+					y += 16;
+				}
+			} else {
+				y += 16;
+				txt(`✓ ${i18n.allSettled}`, W / 2, y, 13, 'center', true, GREEN);
+				y += 12;
+			}
+
+			// Per-person (no payer set)
+			if (!showPaidBy) {
+				y += 8;
+				dashed(y);
+				y += 16;
+				for (const s of [...perPerson].sort((a, b) => b.total - a.total)) {
+					y += 16;
+					txt(s.name, PAD, y, 14, 'left', false, DARK);
+					txt(s.total.toFixed(2), W - PAD, y, 14, 'right', false, DARK);
+					y += 4;
+				}
+				y += 10;
+				txt(i18n.pickPaidHint, W / 2, y, 10, 'center', false, MUTED);
+				y += 12;
+			}
+
+			// Totals
+			y += 8;
+			dashed(y);
+			y += 16;
+
+			y += 16;
+			txt(i18n.subtotal, PAD, y, 14, 'left', false, DARK);
+			txt(m(itemsSubtotal), W - PAD, y, 14, 'right', false, DARK);
+			y += 8;
+
+			if (tip > 0) {
+				y += 16;
+				txt(i18n.tip, PAD, y, 14, 'left', false, DARK);
+				txt(m(tipAmt), W - PAD, y, 14, 'right', false, DARK);
+				y += 8;
+			}
+
+			if (fixed > 0) {
+				y += 16;
+				txt(i18n.extra, PAD, y, 14, 'left', false, DARK);
+				txt(m(n > 0 ? fixed : 0), W - PAD, y, 14, 'right', false, DARK);
+				y += 8;
+			}
+
+			y += 8;
+			solid(y);
+			y += 16;
+
+			y += 22;
+			txt(i18n.total, PAD, y, 20, 'left', true, DARK);
+			txt(m(grand), W - PAD, y, 20, 'right', true, DARK);
+			y += 20;
+
+			// Footer
+			y += 12;
+			dashed(y);
+			y += 16;
+
+			y += 11;
+			txt('* * * THANK YOU * * *', W / 2, y, 11, 'center', false, LIGHT);
+			y += 16;
+
+			// Barcode — mirrors the CSS repeating-gradient from ReceiptTray
+			const BARCODE_W = 128;
+			const BARCODE_H = 32;
+			const barcodeX = (W - BARCODE_W) / 2;
+			y += 4;
+
+			if (ctx) {
+				const bars: [number, number][] = [
+					[0, 1.5], [2.5, 4.5], [5.5, 8], [9, 10.5], [12, 13], [15, 17.5], [19, 20]
+				];
+				const repeatW = 22;
+				ctx.fillStyle = 'rgba(33,30,26,0.5)';
+				for (let bx = 0; bx < BARCODE_W; bx += repeatW) {
+					for (const [start, end] of bars) {
+						const rx = barcodeX + bx + start;
+						const rw = Math.min(end - start, barcodeX + BARCODE_W - rx);
+						if (rw > 0) ctx.fillRect(rx, y, rw, BARCODE_H);
+					}
+				}
+			}
+
+			y += BARCODE_H + 8;
+			y += 10;
+			txt('0 0 1 2 3 4 5 6 7', W / 2, y, 10, 'center', false, LIGHT);
+			y += 20;
+
+			// Bottom padding + zigzag
+			y += 20;
+			y += ZH;
+
+			return y;
+		}
+
+		const H = paint(null, 0);
+		const canvas = document.createElement('canvas');
+		canvas.width = W * DPR;
+		canvas.height = H * DPR;
+		const ctx = canvas.getContext('2d')!;
+		ctx.scale(DPR, DPR);
+		paint(ctx, H);
+
+		return new Promise<Blob>((resolve, reject) => {
+			canvas.toBlob(
+				(blob) => {
+					if (blob) resolve(blob);
+					else reject(new Error('Failed to generate receipt image'));
+				},
+				'image/png'
+			);
+		});
+	}
+
+	async function onShare(): Promise<void> {
+		try {
+			const blob = await generateReceiptImage();
+			const file = new File([blob], 'clear-the-tab-receipt.png', { type: 'image/png' });
+			if (navigator.canShare?.({ files: [file] })) {
+				await navigator.share({ files: [file], title: t().billHead });
+			} else {
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = 'clear-the-tab-receipt.png';
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+				URL.revokeObjectURL(url);
+			}
+			flash('share');
+		} catch {
+			// user cancelled or share unavailable
+		}
 	}
 
 	function onInstall(): void {
