@@ -82,4 +82,5 @@ export interface I18n {
 	pickPaidHint: string;
 	paidBy: string;
 	resetTab: string;
+	installApp: string;
 }

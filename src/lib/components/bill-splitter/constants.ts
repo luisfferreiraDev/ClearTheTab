@@ -85,7 +85,8 @@ export const STR: Record<Lang, I18n> = {
 		allSettled: 'All square - nobody owes a thing.',
 		pickPaidHint: 'Set who paid above to get transfers.',
 		paidBy: 'PAID BY',
-		resetTab: 'Reset tab'
+		resetTab: 'Reset tab',
+		installApp: 'Add to home screen'
 	},
 	es: {
 		subtitle: 'Quien pidio que? Resuelto en 60 segundos.',
@@ -144,7 +145,8 @@ export const STR: Record<Lang, I18n> = {
 		allSettled: 'Todo en paz, nadie debe nada.',
 		pickPaidHint: 'Marca quien pago para ver transferencias.',
 		paidBy: 'PAGO',
-		resetTab: 'Reiniciar cuenta'
+		resetTab: 'Reiniciar cuenta',
+		installApp: 'Anadir a inicio'
 	},
 	pt: {
 		subtitle: 'Quem comeu o que? Resolvido em 60 segundos.',
@@ -203,7 +205,8 @@ export const STR: Record<Lang, I18n> = {
 		allSettled: 'Tudo certo, ninguem deve nada.',
 		pickPaidHint: 'Marca quem pagou para ver transferencias.',
 		paidBy: 'PAGOU',
-		resetTab: 'Reiniciar conta'
+		resetTab: 'Reiniciar conta',
+		installApp: 'Adicionar ao ecra inicial'
 	},
 	fr: {
 		subtitle: 'Qui a pris quoi? Regle en 60 secondes.',
@@ -262,6 +265,7 @@ export const STR: Record<Lang, I18n> = {
 		allSettled: 'Tout est regle, personne ne doit rien.',
 		pickPaidHint: 'Indique qui a paye pour voir les transferts.',
 		paidBy: 'PAYE PAR',
-		resetTab: 'Reinitialiser'
+		resetTab: 'Reinitialiser',
+		installApp: 'Ajouter a l\'accueil'
 	}
 };

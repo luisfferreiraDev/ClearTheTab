@@ -21,6 +21,8 @@
 	let lang = $state<Lang>('en');
 	let currency = $state<(typeof CURRENCIES)[number]>('EUR');
 	let payers = $state<string[]>([]);
+	let canInstall = $state(false);
+	let installPrompt = $state<{ prompt: () => Promise<void> } | null>(null);
 
 	let initialized = false;
 	const STORAGE_KEY = 'clear-the-tab-state';
@@ -299,12 +301,35 @@
 		flash('share');
 	}
 
+	function onInstall(): void {
+		if (!installPrompt) return;
+		void installPrompt.prompt();
+		installPrompt = null;
+		canInstall = false;
+	}
+
 	onMount(() => {
 		const hash = location.hash || '';
 		const match = hash.match(/[#&]d=([^&]+)/);
 		if (match) decodeState(match[1]);
 		else loadFromStorage();
 		initialized = true;
+
+		const handleBeforeInstall = (e: Event) => {
+			e.preventDefault();
+			installPrompt = e as unknown as { prompt: () => Promise<void> };
+			canInstall = true;
+		};
+		const handleAppInstalled = () => {
+			installPrompt = null;
+			canInstall = false;
+		};
+		window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+		window.addEventListener('appinstalled', handleAppInstalled);
+		return () => {
+			window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+			window.removeEventListener('appinstalled', handleAppInstalled);
+		};
 	});
 
 	const calc = $derived(compute());
@@ -418,8 +443,10 @@
 	t={t()}
 	{lang}
 	{currency}
+	{canInstall}
 	onClose={() => (settingsOpen = false)}
 	onLang={(value: Lang) => (lang = value)}
 	onCurrency={(value: (typeof CURRENCIES)[number]) => (currency = value)}
 	onReset={resetTab}
+	{onInstall}
 />
