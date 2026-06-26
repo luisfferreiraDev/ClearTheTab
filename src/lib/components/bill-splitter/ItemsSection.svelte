@@ -1,34 +1,34 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import type { BillItem, I18n, Person } from './types';
 
 	let {
 		t,
 		people = [],
 		items = [],
-		currencySymbol = 'EUR '
+		currencySymbol = 'EUR ',
+		onAdd = () => {},
+		onRemove = () => {},
+		onToggleAssign = () => {},
+		onSplitAll = () => {}
 	}: {
 		t: I18n;
 		people?: Person[];
 		items?: BillItem[];
 		currencySymbol?: string;
+		onAdd?: (payload: { name: string; price: number }) => void;
+		onRemove?: (payload: { id: string }) => void;
+		onToggleAssign?: (payload: { itemId: string; personId: string }) => void;
+		onSplitAll?: (payload: { itemId: string }) => void;
 	} = $props();
 
-	let itemName = '';
-	let itemPrice = '';
-
-	const dispatch = createEventDispatcher<{
-		add: { name: string; price: number };
-		remove: { id: string };
-		toggleAssign: { itemId: string; personId: string };
-		splitAll: { itemId: string };
-	}>();
+	let itemName = $state('');
+	let itemPrice = $state('');
 
 	function submit(): void {
 		const name = itemName.trim();
 		const price = Number.parseFloat(itemPrice.replace(',', '.'));
 		if (!name || !(price > 0)) return;
-		dispatch('add', { name, price });
+		onAdd({ name, price });
 		itemName = '';
 		itemPrice = '';
 	}
@@ -56,7 +56,7 @@
 	<div class="add-row">
 		<input
 			bind:value={itemName}
-			on:keydown={(e) => e.key === 'Enter' && submit()}
+			onkeydown={(e) => e.key === 'Enter' && submit()}
 			placeholder={t.itemPh}
 		/>
 		<div class="price-wrap">
@@ -64,11 +64,11 @@
 			<input
 				bind:value={itemPrice}
 				inputmode="decimal"
-				on:keydown={(e) => e.key === 'Enter' && submit()}
+				onkeydown={(e) => e.key === 'Enter' && submit()}
 				placeholder="0.00"
 			/>
 		</div>
-		<button type="button" class="plus" on:click={submit}>+</button>
+		<button type="button" class="plus" onclick={submit}>+</button>
 	</div>
 
 	{#if items.length}
@@ -82,18 +82,18 @@
 						</div>
 						<div class="item-right">
 							<span>{money(item.price)}</span>
-							<button type="button" on:click={() => dispatch('remove', { id: item.id })}>x</button>
+							<button type="button" onclick={() => onRemove({ id: item.id })}>x</button>
 						</div>
 					</div>
 					<div class="assignments">
-						<button type="button" on:click={() => dispatch('splitAll', { itemId: item.id })}
+						<button type="button" onclick={() => onSplitAll({ itemId: item.id })}
 							>{t.everyone}</button
 						>
 						{#each people as person (person.id)}
 							<button
 								type="button"
 								class:item-active={item.assigned.includes(person.id)}
-								on:click={() => dispatch('toggleAssign', { itemId: item.id, personId: person.id })}
+								onclick={() => onToggleAssign({ itemId: item.id, personId: person.id })}
 							>
 								{person.name}
 							</button>

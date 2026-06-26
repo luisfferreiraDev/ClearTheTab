@@ -1,16 +1,24 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import type { I18n, Person } from './types';
 
-	let { t, people = [] }: { t: I18n; people?: Person[] } = $props();
+	let {
+		t,
+		people = [],
+		onAdd = () => {},
+		onRemove = () => {}
+	}: {
+		t: I18n;
+		people?: Person[];
+		onAdd?: (payload: { name: string }) => void;
+		onRemove?: (payload: { id: string }) => void;
+	} = $props();
 
-	let name = '';
-	const dispatch = createEventDispatcher<{ add: { name: string }; remove: { id: string } }>();
+	let name = $state('');
 
 	function submit(): void {
 		const trimmed = name.trim();
 		if (!trimmed) return;
-		dispatch('add', { name: trimmed });
+		onAdd({ name: trimmed });
 		name = '';
 	}
 </script>
@@ -23,10 +31,10 @@
 	<div class="add-row">
 		<input
 			bind:value={name}
-			on:keydown={(e) => e.key === 'Enter' && submit()}
+			onkeydown={(e) => e.key === 'Enter' && submit()}
 			placeholder={t.addFriend}
 		/>
-		<button type="button" on:click={submit}>{t.add}</button>
+		<button type="button" onclick={submit}>{t.add}</button>
 	</div>
 
 	{#if people.length}
@@ -37,10 +45,8 @@
 						>{person.name[0]?.toUpperCase() ?? '?'}</span
 					>
 					<span class="name">{person.name}</span>
-					<button
-						type="button"
-						aria-label="Remove"
-						on:click={() => dispatch('remove', { id: person.id })}>x</button
+					<button type="button" aria-label="Remove" onclick={() => onRemove({ id: person.id })}
+						>x</button
 					>
 				</div>
 			{/each}

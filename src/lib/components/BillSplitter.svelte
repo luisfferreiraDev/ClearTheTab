@@ -24,7 +24,8 @@
 	const uid = (): string => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 	const t = (): (typeof STR)[Lang] => STR[lang] ?? STR.en;
 	const cur = (): string => CURRENCY_SYMBOL[currency];
-	const m = (v: number): string => `${cur()}${(Math.round((v + Number.EPSILON) * 100) / 100).toFixed(2)}`;
+	const m = (v: number): string =>
+		`${cur()}${(Math.round((v + Number.EPSILON) * 100) / 100).toFixed(2)}`;
 
 	function pickColor(): string {
 		const used = new Set(people.map((person) => person.color));
@@ -40,7 +41,10 @@
 
 	function removePerson(id: string): void {
 		people = people.filter((person) => person.id !== id);
-		items = items.map((item) => ({ ...item, assigned: item.assigned.filter((assignedId) => assignedId !== id) }));
+		items = items.map((item) => ({
+			...item,
+			assigned: item.assigned.filter((assignedId) => assignedId !== id)
+		}));
 		payers = payers.filter((payer) => payer !== id);
 	}
 
@@ -56,7 +60,12 @@
 		items = items.map((item) => {
 			if (item.id !== itemId) return item;
 			const active = item.assigned.includes(personId);
-			return { ...item, assigned: active ? item.assigned.filter((id) => id !== personId) : [...item.assigned, personId] };
+			return {
+				...item,
+				assigned: active
+					? item.assigned.filter((id) => id !== personId)
+					: [...item.assigned, personId]
+			};
 		});
 	}
 
@@ -73,7 +82,12 @@
 		payers = payers.includes(id) ? payers.filter((payer) => payer !== id) : [...payers, id];
 	}
 
-	function compute(): { perPerson: PersonShare[]; grand: number; itemsSubtotal: number; n: number } {
+	function compute(): {
+		perPerson: PersonShare[];
+		grand: number;
+		itemsSubtotal: number;
+		n: number;
+	} {
 		const n = people.length;
 		const owe: Record<string, number> = {};
 		for (const person of people) owe[person.id] = 0;
@@ -143,7 +157,12 @@
 	function encodeState(): string {
 		const data = {
 			people,
-			items: items.map((item) => ({ id: item.id, name: item.name, price: item.price, assigned: item.assigned })),
+			items: items.map((item) => ({
+				id: item.id,
+				name: item.name,
+				price: item.price,
+				assigned: item.assigned
+			})),
 			tip,
 			fixed,
 			lang,
@@ -215,7 +234,8 @@
 		lines.push(`Bill split - ${i18n.billHead}`);
 		lines.push('');
 		if (payerIds.length && transfers.length) {
-			for (const tr of transfers) lines.push(`${tr.from.name} -> ${i18n.payVerb} ${tr.to.name}: ${m(tr.amount)}`);
+			for (const tr of transfers)
+				lines.push(`${tr.from.name} -> ${i18n.payVerb} ${tr.to.name}: ${m(tr.amount)}`);
 		} else if (payerIds.length) {
 			lines.push(i18n.allSettled);
 		} else {
@@ -258,9 +278,13 @@
 
 	const tipAmount = $derived(itemsSubtotal * (tip / 100));
 	const tallyEnabled = $derived(n > 0 && items.length > 0);
-	const receiptMeta = $derived(`${n} ${n === 1 ? 'guest' : 'guests'} - ${items.length} ${items.length === 1 ? 'item' : 'items'}`);
+	const receiptMeta = $derived(
+		`${n} ${n === 1 ? 'guest' : 'guests'} - ${items.length} ${items.length === 1 ? 'item' : 'items'}`
+	);
 	const payerNames = $derived(
-		payerIds.map((id) => people.find((person) => person.id === id)?.name).filter((value): value is string => Boolean(value))
+		payerIds
+			.map((id) => people.find((person) => person.id === id)?.name)
+			.filter((value): value is string => Boolean(value))
 	);
 	const currentAccent = $derived(ACCENTS[accent]);
 </script>
@@ -274,21 +298,26 @@
 	/>
 </svelte:head>
 
-<div class="backdrop" />
+<div class="backdrop"></div>
 
 <main class="screen" style={`--accent:${currentAccent}`}>
 	<div class="shell">
 		<HeaderBar t={t()} accent={currentAccent} on:settings={() => (settingsOpen = true)} />
-		<PeopleSection t={t()} {people} on:add={(e) => addPerson(e.detail.name)} on:remove={(e) => removePerson(e.detail.id)} />
+		<PeopleSection
+			t={t()}
+			{people}
+			onAdd={({ name }) => addPerson(name)}
+			onRemove={({ id }) => removePerson(id)}
+		/>
 		<ItemsSection
 			t={t()}
 			{people}
 			{items}
 			currencySymbol={cur()}
-			on:add={(e) => addItem(e.detail.name, e.detail.price)}
-			on:remove={(e) => removeItem(e.detail.id)}
-			on:toggleAssign={(e) => toggleAssign(e.detail.itemId, e.detail.personId)}
-			on:splitAll={(e) => splitAll(e.detail.itemId)}
+			onAdd={({ name, price }) => addItem(name, price)}
+			onRemove={({ id }) => removeItem(id)}
+			onToggleAssign={({ itemId, personId }) => toggleAssign(itemId, personId)}
+			onSplitAll={({ itemId }) => splitAll(itemId)}
 		/>
 		<section class="card adjust">
 			<div class="head-row">
@@ -297,10 +326,12 @@
 			</div>
 			<div class="tip-grid">
 				{#each [0, 5, 10, 15] as option}
-					<button type="button" class:active={tip === option} on:click={() => (tip = option)}>{option}%</button>
+					<button type="button" class:active={tip === option} onclick={() => (tip = option)}
+						>{option}%</button
+					>
 				{/each}
 			</div>
-			<div class="divider" />
+			<div class="divider"></div>
 			<div class="fixed-row">
 				<div>
 					<div class="sub-title">{t().sharedExtra}</div>
@@ -312,8 +343,10 @@
 						type="text"
 						inputmode="decimal"
 						value={fixed ? fixed.toString() : ''}
-						on:input={(event) => {
-							const value = Number.parseFloat((event.currentTarget as HTMLInputElement).value.replace(',', '.'));
+						oninput={(event) => {
+							const value = Number.parseFloat(
+								(event.currentTarget as HTMLInputElement).value.replace(',', '.')
+							);
 							fixed = Number.isNaN(value) ? 0 : value;
 						}}
 						placeholder="0.00"
@@ -330,7 +363,11 @@
 			{#if people.length}
 				<div class="payer-row">
 					{#each people as person (person.id)}
-						<button type="button" class:payer-active={payers.includes(person.id)} on:click={() => togglePayer(person.id)}>
+						<button
+							type="button"
+							class:payer-active={payers.includes(person.id)}
+							onclick={() => togglePayer(person.id)}
+						>
 							{person.name}
 						</button>
 					{/each}
@@ -345,7 +382,11 @@
 					<div>{t().billTotal}</div>
 					<strong>{m(grand)}</strong>
 				</div>
-				<button type="button" class:tally-disabled={!tallyEnabled} on:click={() => tallyEnabled && (trayOpen = true)}>
+				<button
+					type="button"
+					class:tally-disabled={!tallyEnabled}
+					onclick={() => tallyEnabled && (trayOpen = true)}
+				>
 					{tallyEnabled ? t().tally : t().addPeopleItems}
 				</button>
 			</div>
@@ -432,7 +473,9 @@
 		margin-bottom: 4px;
 	}
 	.step {
-		font: 800 12px 'Bricolage Grotesque', system-ui;
+		font:
+			800 12px 'Bricolage Grotesque',
+			system-ui;
 		letter-spacing: 0.02em;
 		color: #fff;
 		background: #211e1a;
@@ -462,12 +505,16 @@
 		align-items: center;
 	}
 	.label {
-		font: 800 12px 'Bricolage Grotesque', system-ui;
+		font:
+			800 12px 'Bricolage Grotesque',
+			system-ui;
 		letter-spacing: 0.02em;
 		color: #8a7e6a;
 	}
 	.amount {
-		font: 700 13px 'Space Mono', monospace;
+		font:
+			700 13px 'Space Mono',
+			monospace;
 		color: #1e9e6a;
 	}
 	.tip-grid {
@@ -478,7 +525,9 @@
 	.tip-grid button {
 		height: 46px;
 		border-radius: 13px;
-		font: 700 14.5px 'Space Mono', monospace;
+		font:
+			700 14.5px 'Space Mono',
+			monospace;
 		cursor: pointer;
 		border: 2.5px solid #cfc4ae;
 		background: #fff;
@@ -529,7 +578,9 @@
 		border: 2.5px solid #211e1a;
 		border-radius: 13px;
 		padding: 0 13px 0 52px;
-		font: 700 15px 'Space Mono', monospace;
+		font:
+			700 15px 'Space Mono',
+			monospace;
 		background: #fffdf8;
 	}
 	.payer-row {
@@ -540,7 +591,9 @@
 	.payer-row button {
 		padding: 7px 14px;
 		border-radius: 999px;
-		font: 700 13px 'Bricolage Grotesque', system-ui;
+		font:
+			700 13px 'Bricolage Grotesque',
+			system-ui;
 		cursor: pointer;
 		border: 2px solid #cfc4ae;
 		background: #fff;
@@ -587,7 +640,9 @@
 		color: #9a8f7c;
 	}
 	.totals strong {
-		font: 700 22px 'Space Mono', monospace;
+		font:
+			700 22px 'Space Mono',
+			monospace;
 		color: #fff;
 	}
 	.tally-bar button {
@@ -597,7 +652,9 @@
 		border-radius: 14px;
 		background: var(--accent, #ff6a3d);
 		color: #211e1a;
-		font: 800 15.5px 'Bricolage Grotesque', system-ui;
+		font:
+			800 15.5px 'Bricolage Grotesque',
+			system-ui;
 		cursor: pointer;
 	}
 	.tally-bar .tally-disabled {
