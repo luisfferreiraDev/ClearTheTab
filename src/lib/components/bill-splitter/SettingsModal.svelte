@@ -30,6 +30,8 @@
 </script>
 
 <!-- Backdrop -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	class="fixed inset-0 z-60 grid place-items-center px-5 bg-black/50 opacity-0 pointer-events-none transition-opacity duration-200"
 	class:!opacity-100={open}
@@ -52,7 +54,15 @@
 				onclick={onClose}
 				aria-label="Close"
 			>
-				<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+				<svg
+					width="10"
+					height="10"
+					viewBox="0 0 10 10"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.5"
+					stroke-linecap="round"
+				>
 					<line x1="1.5" y1="1.5" x2="8.5" y2="8.5" />
 					<line x1="8.5" y1="1.5" x2="1.5" y2="8.5" />
 				</svg>
@@ -67,12 +77,12 @@
 				</div>
 				<div class="grid grid-cols-2 gap-2">
 					{#each LANGS as option (option.code)}
+						{@const isSelected = lang === option.code}
 						<button
 							type="button"
-							class:border-primary={lang === option.code}
-							class:bg-primary={lang === option.code}
-							class:text-white={lang === option.code}
-							class="h-11 px-4 rounded-xl border-thick border-border-light bg-white font-bricolage font-bold text-xl cursor-pointer transition-colors duration-150"
+							class="px-4 border-2 h-12 rounded-sm transition-all font-mono font-bold cursor-pointer text-2xl-0.5 {isSelected
+								? ' bg-black text-white shadow-accent shadow-sm border-black'
+								: '  text-muted-light border-muted-light'}"
 							onclick={() => onLang(option.code)}
 						>
 							{option.label}
@@ -88,15 +98,17 @@
 				</div>
 				<div class="flex gap-2">
 					{#each CURRENCIES as code (code)}
+						{@const isSelected = currency === code}
 						<button
 							type="button"
-							class:border-primary={currency === code}
-							class:bg-primary={currency === code}
-							class:text-white={currency === code}
-							class="flex-1 h-14 rounded-xl border-thick border-border-light bg-white cursor-pointer transition-colors duration-150 flex flex-col items-center justify-center gap-0.5"
+							class="px-4 border-2 h-12 rounded-sm transition-all font-mono font-bold cursor-pointer grow flex flex-col items-center justify-center text-2xl-0.5 {isSelected
+								? ' bg-black text-white shadow-accent shadow-sm border-black'
+								: '  text-muted-light border-muted-light'}"
 							onclick={() => onCurrency(code)}
 						>
-							<span class="font-bricolage font-extrabold text-4xl leading-none">{CURRENCY_DISPLAY[code]}</span>
+							<span class="font-bricolage font-extrabold text-4xl leading-none"
+								>{CURRENCY_DISPLAY[code]}</span
+							>
 							<span class="font-mono text-[9px] tracking-lg opacity-60 leading-none">{code}</span>
 						</button>
 					{/each}
@@ -111,13 +123,13 @@
 				<button
 					class="w-full h-11 border-thick border-border-light rounded-xl text-muted font-bricolage font-extrabold text-xl cursor-pointer hover:border-primary hover:text-primary transition-colors duration-150"
 					type="button"
-					onclick={onReset}
-				>{t.resetTab}</button>
+					onclick={onReset}>{t.resetTab}</button
+				>
 				<button
 					class="w-full h-12 border-thick border-primary rounded-xl text-white font-bricolage font-extrabold text-xl cursor-pointer transition-opacity hover:opacity-90 bg-accent"
 					type="button"
-					onclick={onClose}
-				>{t.done}</button>
+					onclick={onClose}>{t.done}</button
+				>
 			</div>
 		</div>
 	</div>
