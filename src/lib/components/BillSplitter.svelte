@@ -23,6 +23,9 @@
 	let payers = $state<string[]>([]);
 	let accent = $state<keyof typeof ACCENTS>('Tangerine');
 
+	let initialized = false;
+	const STORAGE_KEY = 'clear-the-tab-state';
+
 	const uid = (): string => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 	const t = (): (typeof STR)[Lang] => STR[lang] ?? STR.en;
 	const cur = (): string => CURRENCY_SYMBOL[currency];
@@ -201,6 +204,30 @@
 		}
 	}
 
+	function saveToStorage(): void {
+		try {
+			localStorage.setItem(STORAGE_KEY, encodeState());
+		} catch {
+			// Ignore quota / private-browsing errors.
+		}
+	}
+
+	function loadFromStorage(): void {
+		try {
+			const stored = localStorage.getItem(STORAGE_KEY);
+			if (stored) decodeState(stored);
+		} catch {
+			// Ignore storage errors.
+		}
+	}
+
+	$effect(() => {
+		// Reference all reactive state to establish tracking on first run.
+		people; items; tip; fixed; lang; currency; payers; accent;
+		if (!initialized) return;
+		saveToStorage();
+	});
+
 	async function copyToClipboard(text: string): Promise<void> {
 		try {
 			if (navigator.clipboard?.writeText) {
@@ -266,6 +293,8 @@
 		const hash = location.hash || '';
 		const match = hash.match(/[#&]d=([^&]+)/);
 		if (match) decodeState(match[1]);
+		else loadFromStorage();
+		initialized = true;
 	});
 
 	const calc = $derived(compute());
