@@ -1,6 +1,5 @@
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import tailwindcss from '@tailwindcss/vite';
-import adapter from '@sveltejs/adapter-cloudflare';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -12,8 +11,7 @@ export default defineConfig({
 			compilerOptions: {
 				runes: ({ filename }) =>
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
-			},
-			adapter: adapter()
+			}
 		}),
 		paraglideVitePlugin({ project: './project.inlang', outdir: './src/lib/paraglide' }),
 		VitePWA({
