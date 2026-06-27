@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { I18n } from './types';
 	import { parseReceiptText, type ParsedItem } from './receiptParser';
+	import { Camera } from '@lucide/svelte';
 
 	let {
 		t,
@@ -20,7 +21,10 @@
 	let selectedIndices = $state(new Set<number>());
 
 	const selectedTotal = $derived(
-		[...selectedIndices].reduce((sum, i) => sum + (Number.isFinite(parsedItems[i]?.price) ? parsedItems[i].price : 0), 0)
+		[...selectedIndices].reduce(
+			(sum, i) => sum + (Number.isFinite(parsedItems[i]?.price) ? parsedItems[i].price : 0),
+			0
+		)
 	);
 
 	function triggerCamera(): void {
@@ -94,23 +98,10 @@
 	type="button"
 	title={t.scanReceipt}
 	aria-label={t.scanReceipt}
-	class="w-12 h-12 shrink-0 border-thick border-primary rounded-sm cursor-pointer flex items-center justify-center text-primary bg-surface-light hover:bg-border-lighter transition-colors"
+	class="w-12 h-12 shrink-0 border-thick border-primary rounded-sm cursor-pointer flex items-center justify-center bg-black shadow-accent shadow-md"
 	onclick={triggerCamera}
 >
-	<svg
-		aria-hidden="true"
-		width="20"
-		height="20"
-		viewBox="0 0 24 24"
-		fill="none"
-		stroke="currentColor"
-		stroke-width="2.5"
-		stroke-linecap="round"
-		stroke-linejoin="round"
-	>
-		<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-		<circle cx="12" cy="13" r="4" />
-	</svg>
+	<Camera class="w-6 h-6 text-white" />
 </button>
 
 <!-- Hidden native file input — capture="environment" opens rear camera on mobile -->
@@ -146,7 +137,9 @@
 			onclick={(e) => e.stopPropagation()}
 			onkeydown={(e) => e.stopPropagation()}
 		>
-			<div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-2xl">✕</div>
+			<div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-2xl">
+				✕
+			</div>
 			<p class="font-bricolage font-bold text-center text-primary text-lg">
 				{ocrError === 'empty' ? t.ocrNoItems : t.ocrError}
 			</p>
@@ -225,7 +218,9 @@
 
 						<!-- Editable price -->
 						<div class="flex items-center shrink-0">
-							<span class="font-mono font-bold text-base text-muted-lighter mr-0.5">{currencySymbol}</span>
+							<span class="font-mono font-bold text-base text-muted-lighter mr-0.5"
+								>{currencySymbol}</span
+							>
 							<input
 								type="number"
 								bind:value={item.price}
@@ -245,9 +240,14 @@
 			<div class="px-4 pt-3 pb-7 border-t border-border-lighter">
 				<div class="flex items-center justify-between mb-3 px-1">
 					<span class="font-bricolage font-bold text-base text-muted-light">
-						{selectedIndices.size} {t.itemsHead}
+						{selectedIndices.size}
+						{t.itemsHead}
 					</span>
-					<span class="font-mono font-extrabold text-xl {selectedIndices.size > 0 ? 'text-success' : 'text-muted-lighter'}">
+					<span
+						class="font-mono font-extrabold text-xl {selectedIndices.size > 0
+							? 'text-success'
+							: 'text-muted-lighter'}"
+					>
 						{currencySymbol}{selectedTotal.toFixed(2)}
 					</span>
 				</div>
@@ -255,7 +255,10 @@
 					type="button"
 					onclick={confirmSelection}
 					disabled={selectedIndices.size === 0}
-					class="w-full h-14 rounded-2xl font-bricolage font-extrabold text-xl text-white cursor-pointer transition-opacity {selectedIndices.size > 0 ? 'bg-accent hover:opacity-90' : 'bg-border-light cursor-not-allowed'}"
+					class="w-full h-14 rounded-2xl font-bricolage font-extrabold text-xl text-white cursor-pointer transition-opacity {selectedIndices.size >
+					0
+						? 'bg-accent hover:opacity-90'
+						: 'bg-border-light cursor-not-allowed'}"
 				>
 					{t.done}
 				</button>
