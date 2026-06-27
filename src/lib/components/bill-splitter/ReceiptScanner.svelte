@@ -19,7 +19,7 @@
 	let selectedIndices = $state(new Set<number>());
 
 	const selectedTotal = $derived(
-		[...selectedIndices].reduce((sum, i) => sum + (parsedItems[i]?.price ?? 0), 0)
+		[...selectedIndices].reduce((sum, i) => sum + (Number.isFinite(parsedItems[i]?.price) ? parsedItems[i].price : 0), 0)
 	);
 
 	function triggerCamera(): void {
@@ -64,7 +64,10 @@
 	function confirmSelection(): void {
 		for (const i of selectedIndices) {
 			const item = parsedItems[i];
-			if (item) onAdd({ name: item.name, price: item.price });
+			const price = Number(item?.price);
+			if (item && item.name.trim() && price > 0) {
+				onAdd({ name: item.name.trim(), price });
+			}
 		}
 		closeModal();
 	}
@@ -159,27 +162,44 @@
 			<div class="overflow-y-auto flex-1 px-4 pb-2 flex flex-col gap-2">
 				{#each parsedItems as item, i}
 					{@const selected = selectedIndices.has(i)}
-					<button
-						type="button"
-						onclick={() => toggleItem(i)}
-						class="flex items-center justify-between w-full px-4 py-3.5 rounded-2xl border-thick text-left cursor-pointer transition-all duration-200 active:scale-[0.98] {selected
+					<div
+						class="flex items-center gap-3 w-full px-4 py-3 rounded-2xl border-thick transition-all duration-200 {selected
 							? 'bg-success/10 border-success'
-							: 'border-primary bg-white hover:bg-surface-lighter'}"
+							: 'border-primary bg-white'}"
 					>
-						<div class="flex items-center gap-3 min-w-0">
-							<span
-								class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-extrabold text-white shrink-0 transition-colors duration-200 {selected
-									? 'bg-success'
-									: 'bg-border-light'}"
-							>
-								{selected ? '✓' : ''}
-							</span>
-							<span class="font-bricolage font-bold text-lg text-primary truncate">{item.name}</span>
+						<!-- Toggle -->
+						<button
+							type="button"
+							onclick={() => toggleItem(i)}
+							aria-pressed={selected}
+							class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-extrabold text-white shrink-0 transition-colors duration-200 cursor-pointer {selected
+								? 'bg-success'
+								: 'bg-border-light hover:bg-border-lighter'}"
+						>
+							{selected ? '✓' : ''}
+						</button>
+
+						<!-- Editable name -->
+						<input
+							bind:value={item.name}
+							class="flex-1 min-w-0 font-bricolage font-bold text-lg text-primary bg-transparent border-b-2 border-transparent focus:border-primary outline-none py-0.5 truncate"
+						/>
+
+						<!-- Editable price -->
+						<div class="flex items-center shrink-0">
+							<span class="font-mono font-bold text-base text-muted-lighter mr-0.5">{currencySymbol}</span>
+							<input
+								type="number"
+								bind:value={item.price}
+								step="0.01"
+								min="0"
+								inputmode="decimal"
+								class="w-20 font-mono font-bold text-lg text-right bg-transparent border-b-2 border-transparent focus:border-primary outline-none py-0.5 {selected
+									? 'text-success'
+									: 'text-primary'}"
+							/>
 						</div>
-						<span class="font-mono font-bold text-lg {selected ? 'text-success' : 'text-primary'} ml-3 shrink-0">
-							{currencySymbol}{item.price.toFixed(2)}
-						</span>
-					</button>
+					</div>
 				{/each}
 			</div>
 
