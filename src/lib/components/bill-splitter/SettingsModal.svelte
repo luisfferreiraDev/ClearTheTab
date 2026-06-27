@@ -13,7 +13,6 @@
 		t,
 		lang,
 		currency,
-		canInstall = false,
 		onClose = () => {},
 		onLang = () => {},
 		onCurrency = () => {},
@@ -24,7 +23,6 @@
 		t: I18n;
 		lang: Lang;
 		currency: (typeof CURRENCIES)[number];
-		canInstall?: boolean;
 		onClose?: () => void;
 		onLang?: (value: Lang) => void;
 		onCurrency?: (value: (typeof CURRENCIES)[number]) => void;
@@ -124,19 +122,17 @@
 
 			<!-- Actions -->
 			<div class="flex flex-col gap-2">
-				{#if canInstall}
-					<button
-						class="w-full h-11 border-thick border-primary rounded-xl text-primary font-bricolage font-extrabold text-xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-150 flex items-center justify-center gap-2"
-						type="button"
-						onclick={onInstall}
-					>
-						<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<path d="M8 1v9M4 7l4 4 4-4" />
-							<path d="M1 12v2a1 1 0 001 1h12a1 1 0 001-1v-2" />
-						</svg>
-						{t.installApp}
-					</button>
-				{/if}
+				<button
+					class="w-full h-11 border-thick border-primary rounded-xl text-primary font-bricolage font-extrabold text-xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-150 flex items-center justify-center gap-2"
+					type="button"
+					onclick={onInstall}
+				>
+					<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M8 1v9M4 7l4 4 4-4" />
+						<path d="M1 12v2a1 1 0 001 1h12a1 1 0 001-1v-2" />
+					</svg>
+					{t.installApp}
+				</button>
 				<button
 					class="w-full h-11 border-thick border-border-light rounded-xl text-muted font-bricolage font-extrabold text-xl cursor-pointer hover:border-primary hover:text-primary transition-colors duration-150"
 					type="button"

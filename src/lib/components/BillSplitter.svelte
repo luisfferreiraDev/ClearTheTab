@@ -7,6 +7,7 @@
 	import SettingsModal from './bill-splitter/SettingsModal.svelte';
 	import TipServiceSection from './bill-splitter/TipServiceSection.svelte';
 	import WhoPaidSection from './bill-splitter/WhoPaidSection.svelte';
+	import InstallModal from './bill-splitter/InstallModal.svelte';
 	import { CURRENCIES, CURRENCY_SYMBOL, PALETTE, STR } from './bill-splitter/constants';
 	import type { BillItem, Lang, Person, PersonShare, Transfer } from './bill-splitter/types';
 
@@ -18,6 +19,7 @@
 	let copiedTimeout: ReturnType<typeof setTimeout> | null = null;
 	let trayOpen = $state(false);
 	let settingsOpen = $state(false);
+	let installModalOpen = $state(false);
 	let lang = $state<Lang>('en');
 	let currency = $state<(typeof CURRENCIES)[number]>('EUR');
 	let payers = $state<string[]>([]);
@@ -615,10 +617,16 @@
 	}
 
 	function onInstall(): void {
+		settingsOpen = false;
+		installModalOpen = true;
+	}
+
+	function onInstallNative(): void {
 		if (!installPrompt) return;
 		void installPrompt.prompt();
 		installPrompt = null;
 		canInstall = false;
+		installModalOpen = false;
 	}
 
 	onMount(() => {
@@ -760,10 +768,17 @@
 	t={t()}
 	{lang}
 	{currency}
-	{canInstall}
 	onClose={() => (settingsOpen = false)}
 	onLang={(value: Lang) => (lang = value)}
 	onCurrency={(value: (typeof CURRENCIES)[number]) => (currency = value)}
 	onReset={resetTab}
 	{onInstall}
+/>
+
+<InstallModal
+	open={installModalOpen}
+	{canInstall}
+	t={t()}
+	onClose={() => (installModalOpen = false)}
+	{onInstallNative}
 />
