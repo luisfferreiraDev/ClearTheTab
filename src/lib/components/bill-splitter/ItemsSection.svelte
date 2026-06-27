@@ -9,6 +9,7 @@
 		currencySymbol = 'EUR ',
 		onAdd = () => {},
 		onRemove = () => {},
+		onRename = () => {},
 		onToggleAssign = () => {},
 		onSplitAll = () => {}
 	}: {
@@ -18,12 +19,31 @@
 		currencySymbol?: string;
 		onAdd?: (payload: { name: string; price: number }) => void;
 		onRemove?: (payload: { id: string }) => void;
+		onRename?: (payload: { id: string; name: string }) => void;
 		onToggleAssign?: (payload: { itemId: string; personId: string }) => void;
 		onSplitAll?: (payload: { itemId: string }) => void;
 	} = $props();
 
 	let itemName = $state('');
 	let itemPrice = $state('');
+	let editingId = $state<string | null>(null);
+	let editingName = $state('');
+
+	function startEdit(item: BillItem): void {
+		editingId = item.id;
+		editingName = item.name;
+	}
+
+	function commitEdit(): void {
+		if (editingId) onRename({ id: editingId, name: editingName });
+		editingId = null;
+		editingName = '';
+	}
+
+	function focusAndSelect(node: HTMLInputElement) {
+		node.focus();
+		node.select();
+	}
 
 	function submit(): void {
 		const name = itemName.trim();
@@ -98,8 +118,29 @@
 			{#each items as item (item.id)}
 				<div class="border-thick border-primary bg-surface-light rounded-2xl p-4 shadow-sm">
 					<div class="flex justify-between items-start gap-3">
-						<div>
-							<div class="font-bricolage font-bold text-2xl-0.5">{item.name}</div>
+						<div class="flex-1 min-w-0">
+							{#if editingId === item.id}
+								<input
+									class="font-bricolage font-bold text-2xl-0.5 border-b-2 border-primary bg-transparent outline-none w-full rounded-sm py-1 px-2"
+									bind:value={editingName}
+									onblur={commitEdit}
+									onkeydown={(e) => {
+										if (e.key === 'Enter') {
+											e.currentTarget.blur();
+										} else if (e.key === 'Escape') {
+											editingId = null;
+										}
+									}}
+									use:focusAndSelect
+								/>
+							{:else}
+								<button
+									type="button"
+									class="font-bricolage font-bold text-2xl-0.5 text-left w-full cursor-text truncate bg-transparent border-none p-0"
+									onclick={() => startEdit(item)}
+									title="Click to rename">{item.name}</button
+								>
+							{/if}
 							<div class="text-md font-bold text-muted-light mt-0.5">{eachLabel(item)}</div>
 						</div>
 						<div class="flex items-center gap-2 font-mono font-bold text-2xl">

@@ -66,6 +66,12 @@
 		items = items.filter((item) => item.id !== id);
 	}
 
+	function renameItem(id: string, name: string): void {
+		const trimmed = name.trim();
+		if (!trimmed) return;
+		items = items.map((item) => (item.id === id ? { ...item, name: trimmed } : item));
+	}
+
 	function toggleAssign(itemId: string, personId: string): void {
 		items = items.map((item) => {
 			if (item.id !== itemId) return item;
@@ -705,6 +711,7 @@
 			currencySymbol={cur()}
 			onAdd={({ name, price }) => addItem(name, price)}
 			onRemove={({ id }) => removeItem(id)}
+			onRename={({ id, name }) => renameItem(id, name)}
 			onToggleAssign={({ itemId, personId }) => toggleAssign(itemId, personId)}
 			onSplitAll={({ itemId }) => splitAll(itemId)}
 		/>
