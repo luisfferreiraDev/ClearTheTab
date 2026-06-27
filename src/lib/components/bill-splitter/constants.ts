@@ -89,7 +89,9 @@ export const STR: Record<Lang, I18n> = {
 		receiptTitlePh: 'Receipt name (optional)',
 		scanReceipt: 'Scan receipt',
 		readingReceipt: 'Reading receipt on-device...',
-		selectItems: 'Select Items'
+		selectItems: 'Select Items',
+		ocrError: 'Could not read receipt. Try a clearer photo.',
+		ocrNoItems: 'No items found. Try a clearer photo or add items manually.'
 	},
 	es: {
 		subtitle: 'Quien pidio que? Resuelto en 60 segundos.',
@@ -153,7 +155,9 @@ export const STR: Record<Lang, I18n> = {
 		receiptTitlePh: 'Nombre del recibo (opcional)',
 		scanReceipt: 'Escanear recibo',
 		readingReceipt: 'Leyendo recibo en el dispositivo...',
-		selectItems: 'Seleccionar platos'
+		selectItems: 'Seleccionar platos',
+		ocrError: 'No se pudo leer el recibo. Intenta con una foto mas clara.',
+		ocrNoItems: 'No se encontraron platos. Prueba con mejor foto o anadelos manualmente.'
 	},
 	pt: {
 		subtitle: 'Quem comeu o que? Resolvido em 60 segundos.',
@@ -217,7 +221,9 @@ export const STR: Record<Lang, I18n> = {
 		receiptTitlePh: 'Nome do talao (opcional)',
 		scanReceipt: 'Fotografar talao',
 		readingReceipt: 'A ler talao no dispositivo...',
-		selectItems: 'Selecionar Itens'
+		selectItems: 'Selecionar Itens',
+		ocrError: 'Nao foi possivel ler o talao. Tenta com uma foto mais nitida.',
+		ocrNoItems: 'Nenhum item encontrado. Tenta com melhor foto ou adiciona manualmente.'
 	},
 	fr: {
 		subtitle: 'Qui a pris quoi? Regle en 60 secondes.',
@@ -281,6 +287,8 @@ export const STR: Record<Lang, I18n> = {
 		receiptTitlePh: 'Nom du recu (optionnel)',
 		scanReceipt: 'Scanner le recu',
 		readingReceipt: 'Lecture du recu en cours...',
-		selectItems: 'Selectionner les plats'
+		selectItems: 'Selectionner les plats',
+		ocrError: 'Impossible de lire le recu. Essaie avec une photo plus nette.',
+		ocrNoItems: 'Aucun article trouve. Essaie une meilleure photo ou ajoute manuellement.'
 	}
 };

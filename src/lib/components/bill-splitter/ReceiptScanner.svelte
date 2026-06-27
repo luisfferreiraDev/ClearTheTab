@@ -15,6 +15,7 @@
 	let fileInput: HTMLInputElement;
 	let isLoading = $state(false);
 	let showModal = $state(false);
+	let ocrError = $state<'error' | 'empty' | null>(null);
 	let parsedItems = $state<ParsedItem[]>([]);
 	let selectedIndices = $state(new Set<number>());
 
@@ -42,9 +43,14 @@
 			const items = parseReceiptText(data.text);
 			parsedItems = items;
 			selectedIndices = new Set();
-			if (items.length) showModal = true;
+			if (items.length) {
+				showModal = true;
+			} else {
+				ocrError = 'empty';
+			}
 		} catch (err) {
 			console.error('[ReceiptScanner] OCR failed:', err);
+			ocrError = 'error';
 		} finally {
 			isLoading = false;
 			input.value = '';
@@ -76,6 +82,10 @@
 		showModal = false;
 		parsedItems = [];
 		selectedIndices = new Set();
+	}
+
+	function dismissError(): void {
+		ocrError = null;
 	}
 </script>
 
@@ -120,6 +130,35 @@
 		<p class="text-white font-bricolage font-bold text-xl text-center px-8">
 			{t.readingReceipt}
 		</p>
+	</div>
+{/if}
+
+<!-- Error overlay -->
+{#if ocrError}
+	<div
+		role="presentation"
+		class="fixed inset-0 z-[200] bg-black/70 flex items-end justify-center pb-10"
+		onclick={dismissError}
+	>
+		<div
+			role="alertdialog"
+			aria-modal="true"
+			class="mx-4 w-full max-w-sm bg-surface-light rounded-3xl p-6 flex flex-col items-center gap-4 border-[2.5px] border-primary"
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
+		>
+			<div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-2xl">✕</div>
+			<p class="font-bricolage font-bold text-center text-primary text-lg">
+				{ocrError === 'empty' ? t.ocrNoItems : t.ocrError}
+			</p>
+			<button
+				type="button"
+				onclick={dismissError}
+				class="w-full h-12 rounded-2xl font-bricolage font-extrabold text-base text-white bg-primary cursor-pointer"
+			>
+				{t.done}
+			</button>
+		</div>
 	</div>
 {/if}
 

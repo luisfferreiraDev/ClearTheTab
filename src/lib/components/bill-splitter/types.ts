@@ -87,4 +87,6 @@ export interface I18n {
 	scanReceipt: string;
 	readingReceipt: string;
 	selectItems: string;
+	ocrError: string;
+	ocrNoItems: string;
 }
