@@ -16,9 +16,11 @@
 	let isLoading = $state(false);
 	let showModal = $state(false);
 	let parsedItems = $state<ParsedItem[]>([]);
-	let addedIndices = $state(new Set<number>());
-	let flashedIndex = $state<number | null>(null);
-	let flashTimer: ReturnType<typeof setTimeout> | null = null;
+	let selectedIndices = $state(new Set<number>());
+
+	const selectedTotal = $derived(
+		[...selectedIndices].reduce((sum, i) => sum + (parsedItems[i]?.price ?? 0), 0)
+	);
 
 	function triggerCamera(): void {
 		fileInput.click();
@@ -39,7 +41,7 @@
 
 			const items = parseReceiptText(data.text);
 			parsedItems = items;
-			addedIndices = new Set();
+			selectedIndices = new Set();
 			if (items.length) showModal = true;
 		} catch (err) {
 			console.error('[ReceiptScanner] OCR failed:', err);
@@ -49,25 +51,28 @@
 		}
 	}
 
-	function tapItem(index: number): void {
-		const item = parsedItems[index];
-		if (!item) return;
+	function toggleItem(index: number): void {
+		const next = new Set(selectedIndices);
+		if (next.has(index)) {
+			next.delete(index);
+		} else {
+			next.add(index);
+		}
+		selectedIndices = next;
+	}
 
-		onAdd({ name: item.name, price: item.price });
-		addedIndices = new Set([...addedIndices, index]);
-
-		if (flashTimer) clearTimeout(flashTimer);
-		flashedIndex = index;
-		flashTimer = setTimeout(() => {
-			flashedIndex = null;
-		}, 500);
+	function confirmSelection(): void {
+		for (const i of selectedIndices) {
+			const item = parsedItems[i];
+			if (item) onAdd({ name: item.name, price: item.price });
+		}
+		closeModal();
 	}
 
 	function closeModal(): void {
 		showModal = false;
 		parsedItems = [];
-		addedIndices = new Set();
-		flashedIndex = null;
+		selectedIndices = new Set();
 	}
 </script>
 
@@ -153,40 +158,46 @@
 			<!-- Scrollable items list -->
 			<div class="overflow-y-auto flex-1 px-4 pb-2 flex flex-col gap-2">
 				{#each parsedItems as item, i}
-					{@const added = addedIndices.has(i)}
-					{@const flashing = flashedIndex === i}
+					{@const selected = selectedIndices.has(i)}
 					<button
 						type="button"
-						onclick={() => tapItem(i)}
-						class="flex items-center justify-between w-full px-4 py-3.5 rounded-2xl border-thick text-left cursor-pointer transition-all duration-200 active:scale-[0.98] {flashing
+						onclick={() => toggleItem(i)}
+						class="flex items-center justify-between w-full px-4 py-3.5 rounded-2xl border-thick text-left cursor-pointer transition-all duration-200 active:scale-[0.98] {selected
 							? 'bg-success/10 border-success'
-							: added
-								? 'bg-success/5 border-success/40'
-								: 'border-primary bg-white hover:bg-surface-lighter'}"
+							: 'border-primary bg-white hover:bg-surface-lighter'}"
 					>
 						<div class="flex items-center gap-3 min-w-0">
 							<span
-								class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-extrabold text-white shrink-0 transition-colors duration-200 {added || flashing
+								class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-extrabold text-white shrink-0 transition-colors duration-200 {selected
 									? 'bg-success'
-									: 'bg-primary'}"
+									: 'bg-border-light'}"
 							>
-								{added || flashing ? '✓' : '+'}
+								{selected ? '✓' : ''}
 							</span>
 							<span class="font-bricolage font-bold text-lg text-primary truncate">{item.name}</span>
 						</div>
-						<span class="font-mono font-bold text-lg text-primary ml-3 shrink-0">
+						<span class="font-mono font-bold text-lg {selected ? 'text-success' : 'text-primary'} ml-3 shrink-0">
 							{currencySymbol}{item.price.toFixed(2)}
 						</span>
 					</button>
 				{/each}
 			</div>
 
-			<!-- Sticky done footer -->
-			<div class="px-4 pt-3 pb-7">
+			<!-- Sticky confirm footer -->
+			<div class="px-4 pt-3 pb-7 border-t border-border-lighter">
+				<div class="flex items-center justify-between mb-3 px-1">
+					<span class="font-bricolage font-bold text-base text-muted-light">
+						{selectedIndices.size} {t.itemsHead}
+					</span>
+					<span class="font-mono font-extrabold text-xl {selectedIndices.size > 0 ? 'text-success' : 'text-muted-lighter'}">
+						{currencySymbol}{selectedTotal.toFixed(2)}
+					</span>
+				</div>
 				<button
 					type="button"
-					onclick={closeModal}
-					class="w-full h-14 rounded-2xl font-bricolage font-extrabold text-xl text-white cursor-pointer bg-accent hover:opacity-90 transition-opacity"
+					onclick={confirmSelection}
+					disabled={selectedIndices.size === 0}
+					class="w-full h-14 rounded-2xl font-bricolage font-extrabold text-xl text-white cursor-pointer transition-opacity {selectedIndices.size > 0 ? 'bg-accent hover:opacity-90' : 'bg-border-light cursor-not-allowed'}"
 				>
 					{t.done}
 				</button>
