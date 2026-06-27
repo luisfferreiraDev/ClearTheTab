@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { BillItem, I18n, Person } from './types';
+	import ReceiptScanner from './ReceiptScanner.svelte';
 
 	let {
 		t,
@@ -81,12 +82,15 @@
 				class="w-full h-12 border-thick border-primary rounded-sm p-0 pl-12 text-2xl-0.5 font-bold bg-surface-light"
 			/>
 		</div>
-		<button
-			type="button"
-			class="md:w-12 h-12 border-thick border-primary rounded-sm text-3xl font-bold cursor-pointer w-full shrink-0"
-			style={`background-color: var(--accent, #ff6a3d)`}
-			onclick={submit}>+</button
-		>
+		<div class="flex gap-2">
+			<ReceiptScanner {t} {currencySymbol} {onAdd} />
+			<button
+				type="button"
+				class="flex-1 md:w-12 md:flex-none h-12 border-thick border-primary rounded-sm text-3xl font-bold cursor-pointer shrink-0"
+				style={`background-color: var(--accent, #ff6a3d)`}
+				onclick={submit}>+</button
+			>
+		</div>
 	</div>
 
 	{#if items.length}

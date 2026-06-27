@@ -84,4 +84,7 @@ export interface I18n {
 	resetTab: string;
 	installApp: string;
 	receiptTitlePh: string;
+	scanReceipt: string;
+	readingReceipt: string;
+	selectItems: string;
 }

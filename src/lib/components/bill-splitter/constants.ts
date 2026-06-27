@@ -86,7 +86,10 @@ export const STR: Record<Lang, I18n> = {
 		paidBy: 'PAID BY',
 		resetTab: 'Reset tab',
 		installApp: 'Add to home screen',
-		receiptTitlePh: 'Receipt name (optional)'
+		receiptTitlePh: 'Receipt name (optional)',
+		scanReceipt: 'Scan receipt',
+		readingReceipt: 'Reading receipt on-device...',
+		selectItems: 'Select Items'
 	},
 	es: {
 		subtitle: 'Quien pidio que? Resuelto en 60 segundos.',
@@ -147,7 +150,10 @@ export const STR: Record<Lang, I18n> = {
 		paidBy: 'PAGO',
 		resetTab: 'Reiniciar cuenta',
 		installApp: 'Anadir a inicio',
-		receiptTitlePh: 'Nombre del recibo (opcional)'
+		receiptTitlePh: 'Nombre del recibo (opcional)',
+		scanReceipt: 'Escanear recibo',
+		readingReceipt: 'Leyendo recibo en el dispositivo...',
+		selectItems: 'Seleccionar platos'
 	},
 	pt: {
 		subtitle: 'Quem comeu o que? Resolvido em 60 segundos.',
@@ -208,7 +214,10 @@ export const STR: Record<Lang, I18n> = {
 		paidBy: 'PAGOU',
 		resetTab: 'Reiniciar conta',
 		installApp: 'Adicionar ao ecra inicial',
-		receiptTitlePh: 'Nome do talao (opcional)'
+		receiptTitlePh: 'Nome do talao (opcional)',
+		scanReceipt: 'Fotografar talao',
+		readingReceipt: 'A ler talao no dispositivo...',
+		selectItems: 'Selecionar Itens'
 	},
 	fr: {
 		subtitle: 'Qui a pris quoi? Regle en 60 secondes.',
@@ -269,6 +278,9 @@ export const STR: Record<Lang, I18n> = {
 		paidBy: 'PAYE PAR',
 		resetTab: 'Reinitialiser',
 		installApp: "Ajouter a l'accueil",
-		receiptTitlePh: 'Nom du recu (optionnel)'
+		receiptTitlePh: 'Nom du recu (optionnel)',
+		scanReceipt: 'Scanner le recu',
+		readingReceipt: 'Lecture du recu en cours...',
+		selectItems: 'Selectionner les plats'
 	}
 };
