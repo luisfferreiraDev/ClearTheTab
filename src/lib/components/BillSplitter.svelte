@@ -14,6 +14,8 @@
 	let people = $state<Person[]>([]);
 	let items = $state<BillItem[]>([]);
 	let tip = $state(0);
+	let customTipEur = $state(0);
+	let customTipEurValue = $state('');
 	let fixed = $state(0);
 	let copied = $state<'' | 'copy' | 'share'>('');
 	let copiedTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -98,6 +100,8 @@
 		people = [];
 		items = [];
 		tip = 0;
+		customTipEur = 0;
+		customTipEurValue = '';
 		fixed = 0;
 		payers = [];
 		receiptTitle = '';
@@ -133,13 +137,14 @@
 		}
 
 		const fixedEach = n > 0 ? fixed / n : 0;
+		const itemsSubtotal = items.reduce((sum, item) => sum + (item.price || 0), 0);
+		const effectiveTipAmount = customTipEur > 0 ? customTipEur : itemsSubtotal * (tip / 100);
 		const perPerson: PersonShare[] = people.map((person) => {
 			const base = owe[person.id] || 0;
-			const tipShare = base * (tip / 100);
+			const tipShare = itemsSubtotal > 0 ? (base / itemsSubtotal) * effectiveTipAmount : 0;
 			return { ...person, base, total: base + tipShare + fixedEach };
 		});
-		const itemsSubtotal = items.reduce((sum, item) => sum + (item.price || 0), 0);
-		const grand = itemsSubtotal * (1 + tip / 100) + (n > 0 ? fixed : 0);
+		const grand = itemsSubtotal + effectiveTipAmount + (n > 0 ? fixed : 0);
 		return { perPerson, grand, itemsSubtotal, n };
 	}
 
@@ -196,6 +201,7 @@
 				assigned: item.assigned
 			})),
 			tip,
+			customTipEur,
 			fixed,
 			lang,
 			currency,
@@ -213,6 +219,7 @@
 				people?: Person[];
 				items?: BillItem[];
 				tip?: number;
+				customTipEur?: number;
 				fixed?: number;
 				lang?: Lang;
 				currency?: (typeof CURRENCIES)[number];
@@ -223,6 +230,10 @@
 			if (Array.isArray(parsed.people)) people = parsed.people;
 			if (Array.isArray(parsed.items)) items = parsed.items;
 			if (typeof parsed.tip === 'number') tip = parsed.tip;
+			if (typeof parsed.customTipEur === 'number') {
+				customTipEur = parsed.customTipEur;
+				customTipEurValue = parsed.customTipEur > 0 ? parsed.customTipEur.toString() : '';
+			}
 			if (typeof parsed.fixed === 'number') fixed = parsed.fixed;
 			if (parsed.lang) lang = parsed.lang;
 			if (parsed.currency) currency = parsed.currency;
@@ -253,7 +264,7 @@
 
 	$effect(() => {
 		// Reference all reactive state to establish tracking on first run.
-		people; items; tip; fixed; lang; currency; payers; receiptTitle; receiptDate;
+		people; items; tip; customTipEur; fixed; lang; currency; payers; receiptTitle; receiptDate;
 		if (!initialized) return;
 		saveToStorage();
 	});
@@ -331,7 +342,7 @@
 		const { perPerson, grand, itemsSubtotal } = compute();
 		const { payerIds, transfers } = settlement();
 		const showPaidBy = payerIds.length > 0;
-		const tipAmt = itemsSubtotal * (tip / 100);
+		const tipAmt = customTipEur > 0 ? customTipEur : itemsSubtotal * (tip / 100);
 		const payerNamesStr = payerIds
 			.map((id) => people.find((p) => p.id === id)?.name)
 			.filter((v): v is string => Boolean(v))
@@ -669,7 +680,7 @@
 	const payerIds = $derived(settle.payerIds as string[]);
 	const transfers = $derived(settle.transfers as Transfer[]);
 
-	const tipAmount = $derived(itemsSubtotal * (tip / 100));
+	const tipAmount = $derived(customTipEur > 0 ? customTipEur : itemsSubtotal * (tip / 100));
 	const tallyEnabled = $derived(n > 0 && items.length > 0);
 	const receiptMeta = $derived(
 		`${n} ${n === 1 ? 'guest' : 'guests'} - ${items.length} ${items.length === 1 ? 'item' : 'items'}`
@@ -721,8 +732,19 @@
 			tipAmountLabel={m(tipAmount)}
 			currencySymbol={cur()}
 			fixedValue={fixed ? fixed.toString() : ''}
-			onTipChange={(value: number) => (tip = value)}
+			{customTipEur}
+			{customTipEurValue}
+			onTipChange={(value: number) => {
+				tip = value;
+				customTipEur = 0;
+				customTipEurValue = '';
+			}}
 			onFixedChange={(value: number) => (fixed = value)}
+			onCustomTipEurChange={(raw: string, value: number) => {
+				customTipEur = value;
+				customTipEurValue = raw;
+				tip = 0;
+			}}
 		/>
 		<WhoPaidSection t={t()} {people} {payers} onTogglePayer={({ id }) => togglePayer(id)} />
 		<div class="sticky bottom-3 z-50">
@@ -757,7 +779,7 @@
 	shares={perPerson}
 	subtotalLabel={m(itemsSubtotal)}
 	tipLabel={m(tipAmount)}
-	showTip={tip > 0}
+	showTip={tip > 0 || customTipEur > 0}
 	extraLabel={m(n > 0 ? fixed : 0)}
 	showExtra={fixed > 0}
 	grandLabel={m(grand)}

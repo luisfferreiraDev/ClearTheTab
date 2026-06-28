@@ -7,16 +7,22 @@
 		tipAmountLabel = '',
 		currencySymbol = '',
 		fixedValue = '',
+		customTipEur = 0,
+		customTipEurValue = '',
 		onTipChange = () => {},
-		onFixedChange = () => {}
+		onFixedChange = () => {},
+		onCustomTipEurChange = () => {}
 	}: {
 		t: I18n;
 		tip?: number;
 		tipAmountLabel?: string;
 		currencySymbol?: string;
 		fixedValue?: string;
+		customTipEur?: number;
+		customTipEurValue?: string;
 		onTipChange?: (value: number) => void;
 		onFixedChange?: (value: number) => void;
+		onCustomTipEurChange?: (raw: string, value: number) => void;
 	} = $props();
 </script>
 
@@ -26,12 +32,12 @@
 			{t.tipService}
 		</div>
 		<div class="text-success text-lg-0.5 font-mono font-bold">
-			{tip === 0 ? t.none : `+${tipAmountLabel}`}
+			{tip === 0 && customTipEur === 0 ? t.none : `+${tipAmountLabel}`}
 		</div>
 	</div>
 	<div class="grid md:grid-cols-4 gap-2 grid-cols-2">
-		{#each [0, 5, 10, 15] as option}
-			{@const isSelected = tip === option}
+		{#each [0, 5, 10] as option}
+			{@const isSelected = tip === option && customTipEurValue === ''}
 			<button
 				type="button"
 				class="px-4 border-2 h-12 rounded-sm transition-all font-mono font-bold cursor-pointer text-2xl-0.5 {isSelected
@@ -40,6 +46,33 @@
 				onclick={() => onTipChange(option)}>{option}%</button
 			>
 		{/each}
+		<div
+			class="relative border-2 h-12 rounded-sm transition-all {customTipEur > 0
+				? 'bg-black border-black shadow-accent shadow-sm'
+				: 'border-muted-light'}"
+		>
+			<span
+				class="absolute left-2 top-1/2 -translate-y-1/2 font-mono font-bold text-2xl-0.5 pointer-events-none {customTipEur >
+				0
+					? 'text-white'
+					: 'text-muted-light'}">{currencySymbol}</span
+			>
+			<input
+				type="text"
+				inputmode="decimal"
+				value={customTipEurValue}
+				oninput={(event) => {
+					const raw = (event.currentTarget as HTMLInputElement).value;
+					const value = Number.parseFloat(raw.replace(',', '.'));
+					onCustomTipEurChange(raw, Number.isNaN(value) || value <= 0 ? 0 : value);
+				}}
+				placeholder="—"
+				class="absolute inset-0 w-full h-full pl-8 pr-2 bg-transparent font-mono font-bold text-2xl-0.5 outline-none indent-4 rounded-sm {customTipEur >
+				0
+					? 'text-white placeholder:text-white/40'
+					: 'text-muted-light'}"
+			/>
+		</div>
 	</div>
 	<div
 		class="h-0.5 bg-repeat-x"
