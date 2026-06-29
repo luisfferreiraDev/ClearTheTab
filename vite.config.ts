@@ -14,7 +14,33 @@ export default defineConfig({
 			manifest: false,
 			workbox: {
 				globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-				navigateFallback: '/'
+				runtimeCaching: [
+					{
+						// Cache page HTML on first visit; serve from cache when offline
+						urlPattern: ({ request }) => request.mode === 'navigate',
+						handler: 'NetworkFirst',
+						options: {
+							cacheName: 'pages',
+							networkTimeoutSeconds: 3
+						}
+					},
+					{
+						// Cache Tesseract CDN resources (WASM + language data) after first use
+						urlPattern:
+							/^https:\/\/(cdn\.jsdelivr\.net|tessdata\.projectnaptha\.com)\//,
+						handler: 'CacheFirst',
+						options: {
+							cacheName: 'tesseract-cdn',
+							expiration: {
+								maxEntries: 20,
+								maxAgeSeconds: 60 * 60 * 24 * 30
+							},
+							cacheableResponse: {
+								statuses: [0, 200]
+							}
+						}
+					}
+				]
 			}
 		})
 	]
